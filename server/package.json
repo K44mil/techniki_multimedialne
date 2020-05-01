@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "NODE_ENV=production node server",
-    "dev": "nodemon server"
+    "server": "nodemon server",
+    "client": "npm start --prefix ../client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "",
   "license": "MIT",
@@ -15,6 +17,7 @@
     "mongoose": "^5.9.11"
   },
   "devDependencies": {
+    "concurrently": "^5.2.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.3"
   }
