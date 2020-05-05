@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
@@ -12,9 +11,12 @@ dotenv.config({ path: './config/config.env' });
 connectDB();
 
 // Route files
-const testRoute = require('./routes/test.route');
+const authRoutes = require('./routes/auth.routes');
 
 const app = express();
+
+// Body parser
+app.use(express.json());
 
 // Logging middleware only in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -22,7 +24,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Mount routes
-app.use('/api/v1/test', testRoute);
+app.use('/api/v1/auth', authRoutes);
 
 // Set error handler
 app.use(errorHandler);
