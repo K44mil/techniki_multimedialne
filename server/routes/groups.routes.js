@@ -4,7 +4,8 @@ const { protect, authorize } = require('../middleware/auth');
 const {
     createGroup,
     deleteGroup,
-    getGroups
+    getStudentGroups,
+    getTeacherGroups
 } = require('../controllers/groups.controller');
 
 router
@@ -14,6 +15,13 @@ router
 router
     .route('/')
     .post(protect, authorize('teacher', 'admin'), createGroup);
-    // .get(getGroups);
+
+router
+    .route('/student/:id')
+    .get(protect, authorize('student', 'admin'), getStudentGroups);
+
+router
+    .route('/teacher/:id')
+    .get(protect, authorize('teacher', 'admin'), getTeacherGroups);
 
 module.exports = router;
