@@ -18,12 +18,10 @@ exports.register = asyncHandler(async (req, res, next) => {
     // Create token
     const token = user.getSignedJwtToken();
     // Send response
-    res
-        .status(200)
-        .json({ 
-            success: true,
-            token
-         });
+    res.status(200).json({ 
+        success: true,
+        token
+    });
 });
 
 // @desc    Login user
@@ -54,12 +52,10 @@ exports.login = asyncHandler(async (req, res, next) => {
     // Create token
     const token = user.getSignedJwtToken();
     // Send response
-    res
-        .status(200)
-        .json({ 
-            success: true,
-            token
-        });
+    res.status(200).json({ 
+        success: true,
+        token
+    });
 });
 
 // @desc    Get current logged user
@@ -67,10 +63,8 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getMe = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id);
-    res
-        .status(200)
-        .json({
-            success: true,
-            data: user
-        });
+    res.status(200).json({
+        success: true,
+        data: user
+    });
 });

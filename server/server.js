@@ -12,6 +12,8 @@ connectDB();
 
 // Route files
 const authRoutes = require('./routes/auth.routes');
+const groupsRoutes = require('./routes/groups.routes');
+const invitationsRoutes = require('./routes/invitations.routes');
 
 const app = express();
 
@@ -25,6 +27,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/groups', groupsRoutes);
+app.use('/api/v1/invitations', invitationsRoutes);
 
 // Set error handler
 app.use(errorHandler);
