@@ -21,7 +21,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Password is required.'],
         minlength: [8, 'Password must be minimum 8 letters length.'],
-        maxlength: [32, 'Password cannot be longer than 32 letters.'],
+        // maxlength: [32, 'Password cannot be longer than 32 letters.'],
         select: false,
     },
     firstName: {

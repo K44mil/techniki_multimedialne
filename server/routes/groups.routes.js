@@ -5,12 +5,15 @@ const {
     createGroup,
     deleteGroup,
     getStudentGroups,
-    getTeacherGroups
+    getTeacherGroups,
+    getGroup
 } = require('../controllers/groups.controller');
 
 router
     .route('/:id')
+    .get(protect, getGroup)
     .delete(protect, authorize('teacher', 'admin'), deleteGroup);
+    
 
 router
     .route('/')

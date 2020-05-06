@@ -106,6 +106,33 @@ exports.getTeacherGroups = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc    Get group by id
+// @route   GET /api/v1/groups/:id
+// @access  Private
+exports.getGroup = asyncHandler(async (req, res, next) => {
+    // Check if group exists
+    let group = await Group.findById(req.params.id);
+    if(!group) {
+        return next(
+            new ErrorResponse(`Group with id ${req.params.id} does not exists.`, 401)
+        );
+    }
+    // Check if authorized
+    if((req.user.id.toString() !== group.owner.toString() && req.user.role === 'teacher') ||
+        (group.members.includes(req.params.id) && req.user.role === 'student')) {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Get group with members & owner data
+    group = await Group.findById(req.params.id).populate('members').populate('owner');
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: group
+    });
+});
+
 // TEST
 // @desc    Get groups
 // @route   GET /api/v1/auth/groups

@@ -1,0 +1,31 @@
+[
+    {
+        "_id": "5eb014d019e9a035f66dc611",
+        "name": "Matematyka L1",
+        "description": "Grupa 1 z przedmiotu matematyka.",
+        "owner": "5eb014d019e9a035f66dc601",
+        "members": [
+            "5eb014d019e9a035f66dc603"
+        ]
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc612",
+        "name": "Matematyka L2",
+        "description": "Grupa 2 z przedmiotu matematyka.",
+        "owner": "5eb014d019e9a035f66dc601",
+        "members": [
+            "5eb014d019e9a035f66dc604"
+        ]
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc613",
+        "name": "NTP L1",
+        "description": "Grupa przedmiotu nowoczesne technologie programowania.",
+        "owner": "5eb014d019e9a035f66dc602",
+        "members": [
+            "5eb014d019e9a035f66dc603",
+            "5eb014d019e9a035f66dc604",
+            "5eb014d019e9a035f66dc605"
+        ]
+    }
+]

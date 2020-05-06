@@ -1,0 +1,42 @@
+[
+    {
+        "_id": "5eb014d019e9a035f66dc601",
+        "email": "jan@kowalski.pl",
+        "role": "teacher",
+        "password": "$2a$10$GLSLMM24f3Y3E4jYoczwdOcgoOq94edUNKm8dxqCg4PLUk1kGl3zG",
+        "firstName": "Jan",
+        "lastName": "Kowalski"
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc602",
+        "email": "mariusz@kowalski.pl",
+        "role": "teacher",
+        "password": "$2a$10$GLSLMM24f3Y3E4jYoczwdOcgoOq94edUNKm8dxqCg4PLUk1kGl3zG",
+        "firstName": "Mariusz",
+        "lastName": "Kowalski"
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc603",
+        "email": "bartosz@nowak.pl",
+        "role": "student",
+        "password": "$2a$10$GLSLMM24f3Y3E4jYoczwdOcgoOq94edUNKm8dxqCg4PLUk1kGl3zG",
+        "firstName": "Bartosz",
+        "lastName": "Nowak"
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc604",
+        "email": "kamil@drozd.pl",
+        "role": "student",
+        "password": "$2a$10$GLSLMM24f3Y3E4jYoczwdOcgoOq94edUNKm8dxqCg4PLUk1kGl3zG",
+        "firstName": "Kamil",
+        "lastName": "Drozd"
+    },
+    {
+        "_id": "5eb014d019e9a035f66dc605",
+        "email": "patryk@bochnak.pl",
+        "role": "student",
+        "password": "$2a$10$GLSLMM24f3Y3E4jYoczwdOcgoOq94edUNKm8dxqCg4PLUk1kGl3zG",
+        "firstName": "Patryk",
+        "lastName": "Bochnak"
+    }
+]
