@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-export const Landing = () => {
+const Landing = () => {
   return (
     <section className='landing'>
       <div className='dark-overlay'>
         <div className='landing-inner'>
-          <h1 className='x-large'>eLessons Platform</h1>
+          <h1 className='x-large'>eLesson Platform</h1>
           <p className='lead'>
             Create a lesson's group, share materials, do tests in one place.
           </p>
-          <div>
+          <div className='buttons'>
             <Link to='/register' className='btn btn-primary'>
               Sign Up
             </Link>
@@ -22,3 +22,5 @@ export const Landing = () => {
     </section>
   );
 };
+
+export default Landing;

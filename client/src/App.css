@@ -86,28 +86,60 @@ img {
     outline: none;
 }
 
-.btn-primary {
+.alert {
+    padding: 0.8rem;
+    margin: 1rem 0;
+    opacity: 0.9;
+    background: var(--light-color);
+    color: #333;
+}
+
+.btn-primary,
+.bg-primary,
+.badge-primary,
+.alert-primary {
     background: var(--primary-color);
     color: #fff;
 }
 
-.btn-light {
+.btn-light,
+.bg-light,
+.badge-light,
+.alert-light {
     background: var(--light-color);
     color: #333;
 }
 
 .btn-dark,
-.bg-dark {
+.bg-dark,
+.badge-dark,
+.alert-dark {
     background: var(--dark-color);
     color: #fff;
 }
 
-.btn:hover {
-    opacity: 0.8;
+.btn-danger,
+.bg-danger,
+.badge-danger,
+.alert-danger {
+    background: var(--danger-color);
+    color: #fff;
 }
 
-.bg-light,
-.badge-light {
+.btn-success,
+.bg-success,
+.badge-success,
+.alert-success {
+    background: var(--success-color);
+    color: #fff;
+}
+
+.btn-white,
+.bg-white,
+.badge-white,
+.alert-white {
+    background: #fff;
+    color: #333;
     border: #ccc solid 1px;
 }
 
@@ -180,4 +212,39 @@ img {
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+
+
+
+/* Forms */
+.form .form-group {
+    margin: 1.2rem 0;
+}
+
+.form .form-text {
+    display: block;
+    margin-top: 0.3rem;
+    color: #888;
+}
+
+.form input[type='text'],
+.form input[type='email'],
+.form input[type='password'],
+.form input[type='date'],
+.form select,
+.form textarea {
+    display: block;
+    width: 100%;
+    padding: 0.4rem;
+    font-size: 1.2rem;
+    border: 1px solid #ccc;
+}
+
+.form input[type='submit'],
+button {
+    font: inherit;
+}
+
+.form .social-input {
+    display: flex;
 }
