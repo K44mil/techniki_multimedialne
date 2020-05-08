@@ -3,17 +3,19 @@ const User = require('../models/User.model');
 const Group = require('../models/Group.model');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/ErrorResponse');
+const Notification = require('../models/Notification.model');
+const UserNotification = require('../models/UserNotification.model');
 
 // @desc    Create invitation
 // @route   POST /api/v1/auth/invitations
 // @access  Private
 exports.createInvitation = asyncHandler(async (req, res, next) => {
-    const { userId, groupId } = req.body;
+    const { email, groupId } = req.body;
     // Check if user exists
-    const user = await User.findById(userId);
+    const user = await User.findOne({ email: email });
     if(!user) {
         return next(
-            new ErrorResponse(`User with id ${userId} does not exists`, 400)
+            new ErrorResponse(`User with email: ${email} does not exists`, 400)
         );
     }
     // Check if group exists
@@ -30,7 +32,7 @@ exports.createInvitation = asyncHandler(async (req, res, next) => {
         );
     }
     // Check if invitation exists
-    let invitation = await Invitation.find({
+    let invitation = await Invitation.findOne({
         isActive: true,
         user: user.id,
         group: group.id
@@ -50,6 +52,14 @@ exports.createInvitation = asyncHandler(async (req, res, next) => {
     invitation = await Invitation.create({
         user: user.id,
         group: group.id
+    });
+    // Create Notification
+    const notification = await Notification.create({
+        text: `${req.user.firstName} ${req.user.lastName} zaprosił Cię do grupy ${group.name}.`
+    });
+    await UserNotification.create({
+        user,
+        notification
     });
     // Send response
     res.status(200).json({
@@ -95,6 +105,14 @@ exports.acceptInvitation = asyncHandler(async (req, res, next) => {
     // Change invitation property 
     invitation.isActive = false;
     await invitation.save();
+    // Create notification
+    const notification = await Notification.create(
+        `Użytkownik ${user.firstName} ${user.lastName} dołączył do grupy ${group.name}.`
+    );
+    await UserNotification.create({
+        user: group.owner,
+        notification: notification
+    });
     // Send response 
     res.status(200).json({
         success: true,
@@ -130,6 +148,15 @@ exports.rejectInvitation = asyncHandler(async (req, res, next) => {
     invitation.isActive = false;
     invitation.isRejected = true;
     await invitation.save();
+    // Create notification
+    const group = await Group.findById(invitation.group);
+    const notification = await Notification.create(
+        `Użytkownik ${user.firstName} ${user.lastName} odrzucił zaproszenie do grupy ${group.name}.`
+    );
+    await UserNotification.create({
+        user: group.owner,
+        notification: notification
+    });
     // Send response
     res.status(200).json({
         success: true,
