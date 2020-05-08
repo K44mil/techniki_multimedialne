@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const fileupload = require('express-fileupload');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -14,11 +15,17 @@ connectDB();
 const authRoutes = require('./routes/auth.routes');
 const groupsRoutes = require('./routes/groups.routes');
 const invitationsRoutes = require('./routes/invitations.routes');
+const tasksRoutes = require('./routes/tasks.routes');
+const dashboardRoutes = require('./routes/dashboard.routes');
+const notificationsRoutes = require('./routes/notifications.routes');
 
 const app = express();
 
 // Body parser
 app.use(express.json());
+
+// File uploading
+app.use(fileupload());
 
 // Logging middleware only in development mode
 if (process.env.NODE_ENV === 'development') {
@@ -29,6 +36,9 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/groups', groupsRoutes);
 app.use('/api/v1/invitations', invitationsRoutes);
+app.use('/api/v1/tasks', tasksRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/notifications', notificationsRoutes);
 
 // Set error handler
 app.use(errorHandler);
