@@ -3,11 +3,19 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
+import PersonIcon from '@material-ui/icons/Person';
 
-const Navbar = ({ auth: { isAuthenticated, loading }, logout }) => {
+const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
   const authLinks = (
     <ul>
-      <li>
+      <li className='logged-user'>
+        <div className='profile-icon'>
+          <PersonIcon />
+        </div>
+
+        {isAuthenticated ? `${user.firstName} ${user.lastName}` : ''}
+      </li>
+      <li className='profile-icon'>
         <Link to='/' onClick={logout}>
           Logout
         </Link>
