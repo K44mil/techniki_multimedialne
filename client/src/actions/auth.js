@@ -51,10 +51,12 @@ export const register = ({
 
     dispatch(loadUser());
   } catch (err) {
-    const error = err.response.data.error;
+    if (err.response) {
+      const error = err.response.data.error;
 
-    if (error) {
-      dispatch(setAlert(error, 'danger'));
+      if (error) {
+        dispatch(setAlert(error, 'danger'));
+      }
     }
     dispatch({
       type: REGISTER_FAIL
@@ -76,11 +78,14 @@ export const login = ({ email, password }) => async dispatch => {
 
     dispatch(loadUser());
   } catch (err) {
-    const error = err.response.data.error;
+    if (err.response) {
+      const error = err.response.data.error;
 
-    if (error) {
-      dispatch(setAlert(error, 'danger'));
+      if (error) {
+        dispatch(setAlert(error, 'danger'));
+      }
     }
+
     dispatch({
       type: LOGIN_FAIL
     });

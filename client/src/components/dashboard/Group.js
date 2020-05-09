@@ -16,9 +16,8 @@ const groupSchema = Yup.object().shape({
     .max(250, VALIDATION_ERRORS.long)
 });
 
-const Group = ({ initialState, setRef, handleSubmit }) => (
+const Group = ({ initialState, handleSubmit }) => (
   <Formik
-    ref={setRef}
     initialValues={initialState}
     validationSchema={groupSchema}
     onSubmit={handleSubmit}

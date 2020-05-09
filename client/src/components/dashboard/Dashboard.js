@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { blue } from '@material-ui/core/colors';
 import GroupIcon from '@material-ui/icons/Group';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import EmailIcon from '@material-ui/icons/Email';
@@ -15,24 +14,8 @@ import { addGroup } from '../../actions/group';
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
-  },
-  item: { backgroundColor: blue }
+  }
 }));
-
-const tableButtonStudent = <button className='dashboard-button'>Pokaż</button>;
-
-const tableButtonTeacher = (
-  <button className='dashboard-button'>Sprawdź</button>
-);
-
-const columns = ['Autor', 'Zadanie', 'Termin', ''];
-const data = [
-  ['Patryk Bochnak', 'Task1', '04.05.2020', tableButtonStudent],
-  ['Kamil Drozd', 'Task1', '02.05.2020', tableButtonStudent]
-];
-
-const titleStudent = 'Zadania do zrobienia';
-const titleTeacher = 'Zadania do sprawdzenia';
 
 const options = {
   sortFilterList: false,
@@ -44,18 +27,11 @@ const options = {
   searchPlaceholder: 'Your Custom Search Placeholder'
 };
 
-const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
+const Dashboard = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
   const classes = useStyles();
   const addForm = useRef(null);
 
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  //   const [id, setID] = useState();
-
   const [addOpen, setAddOpen] = useState(false);
-
-  const handleDeleteModal = () => {
-    setDeleteOpen(!deleteOpen);
-  };
 
   const handleAddModal = () => {
     setAddOpen(!addOpen);
@@ -68,6 +44,21 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
       </button>
     </Grid>
   );
+
+  const tableButton = (
+    <button className='dashboard-button'>
+      {' '}
+      {isAuthenticated && user !== null && user.role === 'student'
+        ? 'Pokaż'
+        : 'Sprawdź'}{' '}
+    </button>
+  );
+
+  const columns = ['Autor', 'Zadanie', 'Termin', ''];
+  const data = [
+    ['Patryk Bochnak', 'Task1', '04.05.2020', tableButton],
+    ['Kamil Drozd', 'Task1', '02.05.2020', tableButton]
+  ];
 
   const teacherButton = (
     <>
@@ -123,7 +114,7 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
                 <Grid item xs={12} sm={6}>
                   <p className='p-dashboard'>15</p>
                 </Grid>
-                {isAuthenticated && user.role === 'student'
+                {isAuthenticated && user !== null && user.role === 'student'
                   ? studentButton
                   : teacherButton}
               </Grid>
@@ -138,7 +129,7 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
                   <NotificationsIcon fontSize='large' />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <p class='p-dashboard'>5</p>
+                  <p className='p-dashboard'>5</p>
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <button className='dashboard-button' type='submit'>
@@ -157,7 +148,7 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
                   <EmailIcon fontSize='large' />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <p class='p-dashboard'>10</p>
+                  <p className='p-dashboard'>10</p>
                 </Grid>
                 <Grid item xs={12} sm={12}>
                   <button className='dashboard-button' type='submit'>
@@ -170,9 +161,18 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
         </Grid>
         <Grid container spacing={5}>
           <Grid item xs>
-            <h1 className='large text-primary'> {titleStudent} </h1>
+            <h1 className='large text-primary'>
+              {' '}
+              {isAuthenticated && user !== null && user.role === 'student'
+                ? 'Zadania do sprawdzenia'
+                : 'Zadania do zrobienia'}{' '}
+            </h1>
             <MUIDataTable
-              title={titleStudent}
+              title={
+                isAuthenticated && user !== null && user.role === 'student'
+                  ? 'Zadania do sprawdzenia'
+                  : 'Zadania do zrobienia'
+              }
               data={data}
               columns={columns}
               options={options}
@@ -186,7 +186,7 @@ const Dashboard = ({ auth: { user, isAuthenticated }, addGroup }) => {
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
-  group: PropTypes.func.isRequired
+  addGroup: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

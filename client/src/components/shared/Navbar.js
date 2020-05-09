@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { logout } from '../../actions/auth';
 import PersonIcon from '@material-ui/icons/Person';
 
-const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
+const Navbar = ({ auth: { isAuthenticated, loading, user = {} }, logout }) => {
   const authLinks = (
     <ul>
       <li className='logged-user'>
@@ -13,7 +13,9 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
           <PersonIcon />
         </div>
 
-        {isAuthenticated ? `${user.firstName} ${user.lastName}` : ''}
+        {isAuthenticated && user !== null
+          ? `${user.firstName} ${user.lastName}`
+          : ''}
       </li>
       <li className='profile-icon'>
         <Link to='/' onClick={logout}>
