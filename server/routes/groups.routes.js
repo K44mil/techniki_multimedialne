@@ -4,27 +4,28 @@ const { protect, authorize } = require('../middleware/auth');
 const {
     createGroup,
     deleteGroup,
-    getStudentGroups,
-    getTeacherGroups,
+    getMyGroups,
+    removeStudentFromGroup,
     getGroup
 } = require('../controllers/groups.controller');
+
+
+router
+    .route('/myGroups')
+    .get(protect, getMyGroups);
 
 router
     .route('/:id')
     .get(protect, getGroup)
     .delete(protect, authorize('teacher', 'admin'), deleteGroup);
-    
+
+router
+    .route('/:id/removeStudent/:studentId')
+    .put(protect, authorize('teacher', 'admin'), removeStudentFromGroup);
 
 router
     .route('/')
     .post(protect, authorize('teacher', 'admin'), createGroup);
 
-router
-    .route('/student/:id')
-    .get(protect, authorize('student', 'admin'), getStudentGroups);
-
-router
-    .route('/teacher/:id')
-    .get(protect, authorize('teacher', 'admin'), getTeacherGroups);
 
 module.exports = router;

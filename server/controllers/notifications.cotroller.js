@@ -27,3 +27,30 @@ exports.getNotifications = asyncHandler(async (req, res, next) => {
         }
     });
 });
+
+// @desc    Delete notification
+// @route   DELETE /api/v1/notifications/:id
+// @access  Private
+exports.deleteNotification = asyncHandler(async (req, res, next) => {
+    const notification = await UserNotification.findById(req.params.id);
+    const user = req.user;
+    // Check if notification exists
+    if (!notification) {
+        return next(
+            new ErrorResponse(`Notification with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Check if authorized
+    if (user.id.toString() !== notification.user.toString() && user.role !== 'admin') {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Delete notification
+    await notification.remove();
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: {}
+    });
+});

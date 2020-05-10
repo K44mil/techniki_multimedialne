@@ -1,2 +1,4 @@
 node_modules/
+private/
+public/
 config/config.env
