@@ -15,14 +15,14 @@ exports.createInvitation = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email: email });
     if(!user) {
         return next(
-            new ErrorResponse(`User with email: ${email} does not exists`, 400)
+            new ErrorResponse(`User with email: ${email} does not exist`, 400)
         );
     }
     // Check if group exists
     const group = await Group.findById(groupId);
     if(!group) {
         return next(
-            new ErrorResponse(`Group with id ${groupId} does not exists`, 400)
+            new ErrorResponse(`Group with id ${groupId} does not exist`, 400)
         );
     }
     // Check if the invitator is a group owner
@@ -58,8 +58,8 @@ exports.createInvitation = asyncHandler(async (req, res, next) => {
         text: `${req.user.firstName} ${req.user.lastName} zaprosił Cię do grupy ${group.name}.`
     });
     await UserNotification.create({
-        user,
-        notification
+        user: user.id,
+        notification: notification.id
     });
     // Send response
     res.status(200).json({
@@ -77,7 +77,7 @@ exports.acceptInvitation = asyncHandler(async (req, res, next) => {
     // Check if invitation exists
     if(!invitation) {
         return next(
-            new ErrorResponse(`Invitation with id ${req.params.id} does not exists`, 400)
+            new ErrorResponse(`Invitation with id ${req.params.id} does not exist`, 400)
         );
     }
     // Check if authorized
@@ -96,7 +96,7 @@ exports.acceptInvitation = asyncHandler(async (req, res, next) => {
     const group = await Group.findById(invitation.group);
     if(!group) {
         return next(
-            new ErrorResponse(`Group with id ${invitation.group} does not exists`, 400)
+            new ErrorResponse(`Group with id ${invitation.group} does not exist`, 400)
         );
     }
     // Add user to group
@@ -111,7 +111,7 @@ exports.acceptInvitation = asyncHandler(async (req, res, next) => {
     );
     await UserNotification.create({
         user: group.owner,
-        notification: notification
+        notification: notification.id
     });
     // Send response 
     res.status(200).json({
@@ -129,7 +129,7 @@ exports.rejectInvitation = asyncHandler(async (req, res, next) => {
     // Check if invitation exists
     if(!invitation) {
         return next(
-            new ErrorResponse(`Invitation with id ${req.params.id} does not exists`, 400)
+            new ErrorResponse(`Invitation with id ${req.params.id} does not exist`, 400)
         );
     }
     // Check if authorized
@@ -155,11 +155,28 @@ exports.rejectInvitation = asyncHandler(async (req, res, next) => {
     );
     await UserNotification.create({
         user: group.owner,
-        notification: notification
+        notification: notification.id
     });
     // Send response
     res.status(200).json({
         success: true,
         data: {}
+    });
+});
+
+// @desc    Get my invitations
+// @route   GET /api/v1/invitations/myInvitations
+// @access  Private
+exports.getMyInvitations = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    let invitations = await Invitation.find({
+        isActive: true,
+        user: user.id
+    });
+    if (!invitations) invitations = [];
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: invitations
     });
 });

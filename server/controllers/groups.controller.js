@@ -54,6 +54,106 @@ exports.deleteGroup = asyncHandler(async (req, res, next) => {
     });
 });
 
+// @desc    Get all user groups
+// @route   GET /api/v1/groups/myGroups
+// @access  Private
+exports.getMyGroups = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    let groups = [];
+    //User student
+    if (user.role === 'student') {
+        groups = await Group.find({ members: { $in: user.id } });
+    }
+    // User teachers
+    if (user.role === 'teacher') {
+        groups = await Group.find({ owner: user.id });
+    }
+    //Send response
+    res.status(200).json({
+        success: true,
+        data: groups
+    });
+});
+
+// @desc    Get group by id
+// @route   GET /api/v1/groups/:id
+// @access  Private
+exports.getGroup = asyncHandler(async (req, res, next) => {
+    // Check if group exists
+    let group = await Group.findById(req.params.id);
+    if(!group) {
+        return next(
+            new ErrorResponse(`Group with id ${req.params.id} does not exist.`, 401)
+        );
+    }
+    // Check if authorized
+    if((req.user.id.toString() !== group.owner.toString() && req.user.role === 'teacher') ||
+        (group.members.includes(req.params.id) && req.user.role === 'student')) {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Get group with members & owner data
+    group = await Group.findById(req.params.id).populate('members').populate('owner');
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: group
+    });
+});
+
+// @desc    Remove student from group
+// @route   PUT /api/v1/groups/:id/removeStudent/:studentId
+// @access  Private
+exports.removeStudentFromGroup = asyncHandler(async (req, res, next) => {
+    const group = await Group.findById(req.params.id);
+    const student = await User.findById(req.params.studentId);
+    const user = req.user;
+    // Check if group exists
+    if (!group) {
+        return next(
+            new ErrorResponse(`Group with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Cech if student exists
+    if (!student) {
+        return next(
+            new ErrorResponse(`User with id ${req.params.studentId} does not exist.`, 400)
+        );
+    }
+    // Check if authorized
+    if (user.id.toString() !== group.owner.toString() && user.role !== 'admin') {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Check if student is a member of this group
+    if (!group.members.includes(student.id)) {
+        return next(
+            new ErrorResponse(`User with id ${student.id} is not a member of group with if ${group.id}`, 400)
+        );
+    }
+    // Remove student from group
+    const newMembers = group.members.filter(id => id !== student.id);
+    await group.updateOne({
+        members: newMembers
+    });
+    // Create notification for student
+    const notification = await Notification.create({
+        text: `Użytkownik ${user.firstName} ${user.lastName} usunął Cię z grupy ${group.name}.`
+    })
+    await UserNotification.create({
+        user: student.id,
+        notification: notification.id
+    });
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: group
+    });
+});
+
+/*
 // @desc    Get all student groups
 // @route   GET /api/v1/groups/student/:id
 // @access  Private
@@ -79,7 +179,8 @@ exports.getStudentGroups = asyncHandler(async (req, res, next) => {
         data: groups
     });
 });
-
+*/
+/*
 // @desc    Get all teacher groups
 // @route   GET /api/v1/groups/teacher/:id
 // @access  Private
@@ -105,34 +206,7 @@ exports.getTeacherGroups = asyncHandler(async (req, res, next) => {
         data: groups
     });
 });
-
-// @desc    Get group by id
-// @route   GET /api/v1/groups/:id
-// @access  Private
-exports.getGroup = asyncHandler(async (req, res, next) => {
-    // Check if group exists
-    let group = await Group.findById(req.params.id);
-    if(!group) {
-        return next(
-            new ErrorResponse(`Group with id ${req.params.id} does not exists.`, 401)
-        );
-    }
-    // Check if authorized
-    if((req.user.id.toString() !== group.owner.toString() && req.user.role === 'teacher') ||
-        (group.members.includes(req.params.id) && req.user.role === 'student')) {
-        return next(
-            new ErrorResponse(`Not authorized.`, 401)
-        );
-    }
-    // Get group with members & owner data
-    group = await Group.findById(req.params.id).populate('members').populate('owner');
-    // Send response
-    res.status(200).json({
-        success: true,
-        data: group
-    });
-});
-
+*/
 // TEST
 // @desc    Get groups
 // @route   GET /api/v1/auth/groups
