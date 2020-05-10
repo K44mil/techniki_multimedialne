@@ -1,15 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import GroupIcon from '@material-ui/icons/Group';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import EmailIcon from '@material-ui/icons/Email';
 import MUIDataTable from 'mui-datatables';
-import { Modal } from '../shared/Modal';
-import Group from './Group';
+import Menu from '../shared/Menu';
 import { addGroup } from '../../actions/group';
+import { TableOptions } from '../../shared/consts/TableOption.constants';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,33 +14,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const options = {
-  sortFilterList: false,
-  filter: false,
-  print: false,
-  download: false,
-  selectableRows: 'none',
-  viewColumns: false,
-  searchPlaceholder: 'Your Custom Search Placeholder'
-};
-
-const Dashboard = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
+const Dashboard = ({ auth: { user = {}, isAuthenticated } }) => {
   const classes = useStyles();
-  const addForm = useRef(null);
-
-  const [addOpen, setAddOpen] = useState(false);
-
-  const handleAddModal = () => {
-    setAddOpen(!addOpen);
-  };
-
-  const studentButton = (
-    <Grid item xs={12} sm={12}>
-      <button className='dashboard-button' type='submit'>
-        Twoje grupy
-      </button>
-    </Grid>
-  );
 
   const tableButton = (
     <button className='dashboard-button'>
@@ -60,105 +32,10 @@ const Dashboard = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
     ['Kamil Drozd', 'Task1', '02.05.2020', tableButton]
   ];
 
-  const teacherButton = (
-    <>
-      <Grid item xs={12} sm={6}>
-        <button
-          className='dashboard-button'
-          type='submit'
-          onClick={handleAddModal}
-        >
-          Nowa grupa
-        </button>
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <button className='dashboard-button' type='submit'>
-          Twoje grupy
-        </button>
-      </Grid>
-    </>
-  );
-
-  const addFormProps = {
-    initialState: {
-      name: '',
-      description: ''
-    },
-    setRef: addForm,
-    handleSubmit: (name, description) => addGroup(name, description)
-  };
-
   return (
     <section className='container container-dashboard'>
       <div className={classes.root}>
-        <Modal
-          open={addOpen}
-          onClose={handleAddModal}
-          onClickSubmit={handleAddModal}
-          title='Utwórz grupę'
-          dialogContent={<Group {...addFormProps} />}
-          maxWidth='sm'
-          labelPrimary='Zakończ'
-          dividers
-          fullWidth
-        />
-
-        <Grid container spacing={5}>
-          <Grid item xs>
-            <div className='dashboard-box'>
-              <h1>Moje grupy</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <GroupIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>15</p>
-                </Grid>
-                {isAuthenticated && user !== null && user.role === 'student'
-                  ? studentButton
-                  : teacherButton}
-              </Grid>
-            </div>
-          </Grid>
-
-          <Grid item xs>
-            <div className='dashboard-box box-primary'>
-              <h1>Powiadomienia</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <NotificationsIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>5</p>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <button className='dashboard-button' type='submit'>
-                    Sprawdź powiadomienia
-                  </button>
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-
-          <Grid item xs>
-            <div className='dashboard-box box-secondary'>
-              <h1>Wiadomości</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <EmailIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>10</p>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <button className='dashboard-button' type='submit'>
-                    Sprawdź wiadomości
-                  </button>
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-        </Grid>
+        <Menu />
         <Grid container spacing={5}>
           <Grid item xs>
             <h1 className='large text-primary'>
@@ -175,7 +52,7 @@ const Dashboard = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
               }
               data={data}
               columns={columns}
-              options={options}
+              options={TableOptions}
             />
           </Grid>
         </Grid>

@@ -9,3 +9,5 @@ export const LOGIN_FAIL = 'LOGIN_FAIL';
 export const LOGOUT = 'LOGOUT';
 export const ADD_GROUP_SUCCESS = 'ADD_GROUP_SUCCESS';
 export const ADD_GROUP_FAIL = 'ADD_GROUP_FAIL';
+export const GET_GROUPS_SUCCESS = 'GET_GROUP_SUCCESS';
+export const GET_GROUPS_FAIL = 'GET_GROUP_FAIL';

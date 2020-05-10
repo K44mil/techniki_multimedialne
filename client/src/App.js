@@ -6,6 +6,7 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Alert from './components/shared/Alert';
 import Dashboard from './components/dashboard/Dashboard';
+import Groups from './components/dashboard/Groups';
 import { Provider } from 'react-redux';
 import store from './store';
 import { loadUser } from './actions/auth';
@@ -32,6 +33,7 @@ const App = () => {
             <Route exact path='/register' component={Register} />
             <Route exact path='/login' component={Login} />
             <PrivateRoute exact path='/dashboard' component={Dashboard} />
+            <PrivateRoute exact path='/groups' component={Groups} />
           </Switch>
         </Provider>
       </Fragment>

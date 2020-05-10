@@ -18,7 +18,6 @@ export const loadUser = () => async dispatch => {
 
   try {
     const res = await client.get(`/api/v1/auth/me`);
-    // console.log(res.data.data.role);
 
     dispatch({
       type: USER_LOADED,
