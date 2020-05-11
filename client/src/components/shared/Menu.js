@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
 import GroupIcon from '@material-ui/icons/Group';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import EmailIcon from '@material-ui/icons/Email';
@@ -12,14 +11,7 @@ import { Modal } from '../shared/Modal';
 import GroupForm from '../dashboard/GroupForm';
 import { addGroup } from '../../actions/group';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1
-  }
-}));
-
 const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
-  const classes = useStyles();
   const addForm = useRef(null);
   const history = useHistory();
 
@@ -36,7 +28,13 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
 
   const studentButton = (
     <Grid item xs={12} sm={12}>
-      <button className='dashboard-button' type='submit'>
+      <button
+        className='dashboard-button'
+        type='submit'
+        onClick={() => {
+          routeChange();
+        }}
+      >
         Twoje grupy
       </button>
     </Grid>
@@ -57,7 +55,9 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
         <button
           className='dashboard-button'
           type='submit'
-          onClick={routeChange}
+          onClick={() => {
+            routeChange();
+          }}
         >
           Twoje grupy
         </button>

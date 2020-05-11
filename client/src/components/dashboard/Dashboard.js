@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import Menu from '../shared/Menu';
-import { addGroup } from '../../actions/group';
 import { TableOptions } from '../../shared/consts/TableOption.constants';
 
 const useStyles = makeStyles(theme => ({
@@ -62,14 +61,10 @@ const Dashboard = ({ auth: { user = {}, isAuthenticated } }) => {
 };
 
 Dashboard.propTypes = {
-  auth: PropTypes.object.isRequired,
-  addGroup: PropTypes.func.isRequired
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth
 });
-export default connect(
-  mapStateToProps,
-  { addGroup }
-)(Dashboard);
+export default connect(mapStateToProps)(Dashboard);
