@@ -5,7 +5,8 @@ const {
     createInvitation,
     acceptInvitation,
     rejectInvitation,
-    getMyInvitations
+    getMyInvitations,
+    deleteInvitation
 } = require('../controllers/invitations.controller');
 
 router
@@ -15,6 +16,10 @@ router
 router
     .route('/myInvitations')
     .get(protect, authorize('student', 'admin'), getMyInvitations);
+
+router
+    .route('/:id')
+    .delete(protect, authorize('teacher', 'admin'), deleteInvitation);
 
 router
     .route('/:id/accept')

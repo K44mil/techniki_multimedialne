@@ -9,7 +9,10 @@ import {
   GET_GROUP_BY_ID_FAIL,
   DELETE_GROUP_START,
   DELETE_GROUP_SUCCESS,
-  DELETE_GROUP_FAIL
+  DELETE_GROUP_FAIL,
+  ADD_STUDENT_START,
+  ADD_STUDENT_SUCCESS,
+  ADD_STUDENT_FAIL
 } from '../actions/types';
 
 const initialState = {
@@ -25,6 +28,7 @@ export default function(state = initialState, action) {
     case GET_GROUP_BY_ID_START:
     case GET_GROUPS_START:
     case DELETE_GROUP_START:
+    case ADD_STUDENT_START:
       return {
         ...state,
         loading: true
@@ -49,6 +53,7 @@ export default function(state = initialState, action) {
     case GET_GROUPS_FAIL:
     case GET_GROUP_BY_ID_FAIL:
     case DELETE_GROUP_FAIL:
+    case ADD_STUDENT_FAIL:
       return {
         ...state,
         loading: false
@@ -63,6 +68,12 @@ export default function(state = initialState, action) {
       return {
         groups: state.groups.filter(({ id }) => id !== payload),
         loading: false
+      };
+    case ADD_STUDENT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        group: payload
       };
 
     default:

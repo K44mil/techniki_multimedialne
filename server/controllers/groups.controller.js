@@ -1,6 +1,8 @@
 const Group = require('../models/Group.model');
 const User = require('../models/User.model');
 const Invitation = require('../models/Invitation.model');
+const Notification = require('../models/Notification.model');
+const UserNotification = require('../models/UserNotification.model');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/ErrorResponse');
 
@@ -146,6 +148,51 @@ exports.removeStudentFromGroup = asyncHandler(async (req, res, next) => {
   // Create notification for student
   const notification = await Notification.create({
     text: `Użytkownik ${user.firstName} ${user.lastName} usunął Cię z grupy ${group.name}.`
+  });
+  await UserNotification.create({
+    user: student.id,
+    notification: notification.id
+  });
+  // Send response
+  res.status(200).json({
+    success: true,
+    data: group
+  });
+});
+
+// @desc    Add student to group
+// @route   PUT /api/v1/groups/:id/addStudent/:email
+// @access  Private
+exports.addStudent = asyncHandler(async (req, res, next) => {
+  const student = await User.findOne({ email: req.params.email });
+  const group = await Group.findById(req.params.id);
+  const user = req.user;
+  // Check if student exists
+  if (!student) {
+    return next(
+      new ErrorResponse(
+        `User with email ${req.params.email} does not exist.`,
+        400
+      )
+    );
+  }
+  // Check if group exist
+  if (!group) {
+    return next(new ErrorResponse(`Group with id ${req.params.id}.`, 400));
+  }
+  // Check if authorized
+  if (group.owner.toString() !== user.id.toString() && user.role !== 'admin') {
+    return next(new ErrorResponse('Not authorized.', 401));
+  }
+  // Add student to group
+  const newMembers = group.members;
+  newMembers.push(student.id);
+  await group.updateOne({
+    members: newMembers
+  });
+  // Create notification
+  const notification = await Notification.create({
+    text: `Użytkownik ${user.firstName} ${user.lastName} dodał Cię do grupy ${group.name}.`
   });
   await UserNotification.create({
     user: student.id,
