@@ -180,3 +180,37 @@ exports.getMyInvitations = asyncHandler(async (req, res, next) => {
         data: invitations
     });
 });
+
+// @desc    Delete invitation
+// @route   DELETE /api/v1/invitations/:id
+// @access  Private
+exports.deleteInvitation = asyncHandler(async (req, res, next) => {
+    const invitation = await Invitation(req.params.id);
+    const user = req.user;
+    // Check if invitation exists
+    if (!invitation) {
+        return next(
+            new ErrorResponse(`Invitation with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Check if group exists
+    const group = await Group.findById(invitation.group);
+    if (!group) {
+        return next(
+            new ErrorResponse(`Group to witch invitation is, with id ${group.id} does not exist.`, 400)
+        );
+    }
+    // Check if authorized
+    if (user.id.toString() !== group.owner.toString() && user.role !== 'admin') {
+        return next(
+            new ErrorResponse('Not authorized.', 401)
+        );
+    }
+    // Delete invitation
+    await invitation.remove();
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: {}
+    });
+});

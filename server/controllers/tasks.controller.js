@@ -6,6 +6,9 @@ const Group = require('../models/Group.model');
 const File = require('../models/File.model');
 const path = require('path');
 const fs = require('fs');
+const TaskSolution = require('../models/TaskSolution.model');
+const Notification = require('../models/Notification.model');
+const UserNotification = require('../models/UserNotification.model');
 
 // @desc    Create task
 // @route   POST /api/v1/tasks
@@ -140,4 +143,15 @@ exports.deleteTask = asyncHandler(async (req, res, next) => {
         success: true,
         data: {}
     });
+});
+
+// @desc    Add solution to task
+// @route   POST /api/v1/tasks/:id/addSolution
+// @access  Private
+// TODO:
+exports.addTaskSolution = asyncHandler(async (req, res, next) => {
+    //const task = await Task.findById(req.params.id);
+    //const user = req.user;
+
+
 });

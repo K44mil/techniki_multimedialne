@@ -6,7 +6,8 @@ const {
     deleteGroup,
     getMyGroups,
     removeStudentFromGroup,
-    getGroup
+    getGroup,
+    addStudent
 } = require('../controllers/groups.controller');
 
 
@@ -22,6 +23,10 @@ router
 router
     .route('/:id/removeStudent/:studentId')
     .put(protect, authorize('teacher', 'admin'), removeStudentFromGroup);
+
+router
+    .route('/:id/addStudent/:email')
+    .put(protect, authorize('teacher', 'admin'), addStudent);
 
 router
     .route('/')
