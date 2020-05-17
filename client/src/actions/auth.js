@@ -5,7 +5,10 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  LOGOUT
+  LOGOUT,
+  GET_DASHBOARD_FAIL,
+  GET_DASHBOARD_START,
+  GET_DASHBOARD_SUCCESS
 } from './types';
 import setAuthToken, { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
@@ -76,6 +79,7 @@ export const login = ({ email, password }) => async dispatch => {
     });
 
     dispatch(loadUser());
+    dispatch(getDashboard());
   } catch (err) {
     if (err.response) {
       const error = err.response.data.error;
@@ -94,4 +98,23 @@ export const login = ({ email, password }) => async dispatch => {
 //Logout
 export const logout = () => dispatch => {
   dispatch({ type: LOGOUT });
+};
+
+//Get Dashboard
+export const getDashboard = () => async dispatch => {
+  dispatch({
+    type: GET_DASHBOARD_START
+  });
+
+  try {
+    const res = await client.get(`/api/v1/dashboard`);
+    dispatch({
+      type: GET_DASHBOARD_SUCCESS,
+      payload: res.data.data
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_DASHBOARD_FAIL
+    });
+  }
 };

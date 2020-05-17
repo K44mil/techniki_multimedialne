@@ -11,7 +11,10 @@ import { Modal } from '../shared/Modal';
 import GroupForm from '../dashboard/GroupForm';
 import { addGroup } from '../../actions/group';
 
-const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
+const Menu = ({
+  auth: { user = {}, dashboard = {}, isAuthenticated },
+  addGroup
+}) => {
   const addForm = useRef(null);
   const history = useHistory();
 
@@ -99,7 +102,9 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
                 <GroupIcon fontSize='large' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <p className='p-dashboard'>15</p>
+                <p className='p-dashboard'>
+                  {dashboard !== null ? dashboard.groupsCount : 0}
+                </p>
               </Grid>
               {isAuthenticated && user !== null && user.role === 'student'
                 ? studentButton
@@ -116,10 +121,17 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
                 <NotificationsIcon fontSize='large' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <p className='p-dashboard'>5</p>
+                <p className='p-dashboard'>
+                  {' '}
+                  {dashboard !== null ? dashboard.notificationsCount : 0}
+                </p>
               </Grid>
               <Grid item xs={12} sm={12}>
-                <button className='dashboard-button' type='submit'>
+                <button
+                  className='dashboard-button'
+                  type='submit'
+                  onClick={() => history.push('/notifications')}
+                >
                   Sprawdź powiadomienia
                 </button>
               </Grid>
@@ -134,7 +146,10 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
                 <WorkIcon fontSize='large' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <p className='p-dashboard'>10</p>
+                <p className='p-dashboard'>
+                  {' '}
+                  {dashboard !== null ? dashboard.todo.length : 0}
+                </p>
               </Grid>
               <Grid item xs={12} sm={12}>
                 <button
@@ -156,7 +171,10 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
                 <EmailIcon fontSize='large' />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <p className='p-dashboard'>10</p>
+                <p className='p-dashboard'>
+                  {' '}
+                  {dashboard !== null ? dashboard.messagesCount : 0}
+                </p>
               </Grid>
               <Grid item xs={12} sm={12}>
                 <button className='dashboard-button' type='submit'>

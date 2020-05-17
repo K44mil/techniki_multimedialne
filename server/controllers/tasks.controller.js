@@ -83,9 +83,9 @@ exports.createTask = asyncHandler(async (req, res, next) => {
     // Save task
     await task.save();
     // Create notification
-    const notification = await Notification.create(
-        `Użytkownik ${user.firstName} ${user.lastName} dodał nowe zadanie w grupie ${group.name}.`
-    );
+    const notification = await Notification.create({
+        text: `Użytkownik ${user.firstName} ${user.lastName} dodał nowe zadanie w grupie ${group.name}.`
+    });
     // Set notification to all group members
     for (const student of task.students) {
         await UserNotification.create({
@@ -150,8 +150,90 @@ exports.deleteTask = asyncHandler(async (req, res, next) => {
 // @access  Private
 // TODO:
 exports.addTaskSolution = asyncHandler(async (req, res, next) => {
-    //const task = await Task.findById(req.params.id);
-    //const user = req.user;
-
-
+    const task = await Task.findById(req.params.id);
+    const user = req.user;
+    const group = await Group.findById(task.group);
+    const { text } = req.body.text || '';
+    // Check if task exists
+    if (!task) {
+        return next(
+            new ErrorResponse(`Task with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Check if authorized
+    if (!group.members.includes(user.id)) {
+        return next(
+            new ErrorResponse('Not authorized.', 401)
+        )
+    }
+    // Check if solution exist
+    let taskSolution = await TaskSolution.find({
+        user: user.id,
+        task: task.id
+    });
+    if (taskSolution) {
+        return next(
+            new ErrorResponse('You already gave solution to this task.', 400)
+        )
+    }
+    // Check files
+    let taskSolutionFile = null;
+    if (req.files && req.files.files) {
+        const files = req.files.files.length === undefined ? new Array(req.files.files) : req.files.files;   
+        // Check if there is max 1 file
+        if (files.length > 1) {
+            return next(
+                new ErrorResponse(`You can add maximum 1 file to task solution.`, 400)
+            );
+        }
+        // Check file size
+        for (const file of files) {
+            if (file.size > (5 * 1024 * 1024)) {
+                return next(
+                    new ErrorResponse(`File ${file.name} is too big.`, 400)
+                );
+            }
+        }
+        // Save files
+        for (const file of files) {
+            const type = path.extname(file.name).toString().replace('.', '');
+            const createdFile = await File.create({
+               name: file.name,
+               type: type
+            });
+            taskSolutionFile = createdFile.id;
+            createdFile.path = `/private/${createdFile.id}.${createdFile.type}`.toString();
+            await createdFile.save();
+            file.mv(`${path.resolve(__dirname, '..')}/${createdFile.path}`);
+        } 
+    }
+    // Create Task Solution
+    if (taskSolutionFile) {
+        taskSolution = await TaskSolution.create({
+            text: text,
+            user: user.id,
+            task: task.id,
+            file: taskSolutionFile
+        });
+    } else {
+        taskSolution = await TaskSolution.create({
+            text: text,
+            user: user.id,
+            task: task.id,
+        });
+    }
+    // Create notification
+    // Create notification
+    const notification = await Notification.create({
+        text: `Użytkownik ${user.firstName} ${user.lastName} dodał odpowiedź na Twoje zadanie w grupie ${group.name}.`
+    });
+    await UserNotification.create({
+        user: group.owner,
+        notification: notification.id
+    });
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: taskSolution
+    });
 });

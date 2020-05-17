@@ -25,11 +25,12 @@ export const addGroup = ({ name, description }) => async dispatch => {
 
   try {
     const res = await client.post('/api/v1/groups', body);
-    dispatch(setAlert('Group added successfully', 'success'));
+    dispatch(getGroups());
     dispatch({
       type: ADD_GROUP_SUCCESS,
       payload: res.data
     });
+    dispatch(setAlert('Groupa została stworzona', 'success'));
   } catch (err) {
     const error = err.response.data.error;
 
@@ -86,6 +87,7 @@ export const deleteGroup = id => async dispatch => {
   try {
     await client.delete(`/api/v1/groups/${id}`);
     dispatch(getGroups());
+    dispatch(setAlert('Grupa została usunięta', 'success'));
     dispatch({
       type: DELETE_GROUP_SUCCESS,
       payload: id
@@ -109,6 +111,7 @@ export const addStudent = ({ id, email }) => async dispatch => {
       payload: res.data
     });
     dispatch(getGroupById(id));
+    dispatch(setAlert('Student was added', 'success'));
   } catch (err) {
     dispatch({
       type: ADD_STUDENT_FAIL
@@ -125,13 +128,13 @@ export const deleteStudent = (id, studentId) => async dispatch => {
     const res = await client.put(
       `/api/v1/groups/${id}/removeStudent/${studentId}`
     );
-    console.log(res.data);
 
     dispatch({
       type: DELETE_STUDENT_SUCCESS,
       payload: res.data
     });
     dispatch(getGroupById(id));
+    dispatch(setAlert('Student was deleted', 'success'));
   } catch (err) {
     dispatch({
       type: DELETE_STUDENT_FAIL

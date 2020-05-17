@@ -10,11 +10,12 @@ import Groups from './components/dashboard/Groups';
 import GroupProfile from './components/dashboard/GroupProfile';
 import { Provider } from 'react-redux';
 import store from './store';
-import { loadUser } from './actions/auth';
+import { loadUser, getDashboard } from './actions/auth';
 import setAuthToken from './utils/setAuthToken';
 import PrivateRoute from './components/routing/PrivateRoute';
 
 import './App.css';
+import Notifications from './components/dashboard/Notifications';
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -22,6 +23,7 @@ if (localStorage.token) {
 const App = () => {
   useEffect(() => {
     store.dispatch(loadUser());
+    store.dispatch(getDashboard());
   }, []);
   return (
     <Router>
@@ -36,6 +38,11 @@ const App = () => {
             <PrivateRoute exact path='/dashboard' component={Dashboard} />
             <PrivateRoute exact path='/groups' component={Groups} />
             <PrivateRoute exact path='/groupProfile' component={GroupProfile} />
+            <PrivateRoute
+              exact
+              path='/notifications'
+              component={Notifications}
+            />
           </Switch>
         </Provider>
       </Fragment>

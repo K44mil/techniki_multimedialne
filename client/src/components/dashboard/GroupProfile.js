@@ -126,15 +126,13 @@ const GroupProfile = ({
     return el;
   });
 
-  console.log(myStudents);
-
   return (
     <>
       <Modal
         open={addOpen}
         onClose={handleAddModal}
         onClickSubmit={handleAdd}
-        title='Utwórz grupę'
+        title='Dodaj ucznia'
         dialogContent={<AddStudentForm {...addFormProps} />}
         maxWidth='sm'
         labelPrimary='Zakończ'

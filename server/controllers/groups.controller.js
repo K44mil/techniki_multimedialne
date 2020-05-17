@@ -1,10 +1,10 @@
 const Group = require('../models/Group.model');
 const User = require('../models/User.model');
 const Invitation = require('../models/Invitation.model');
-const Notification = require('../models/Notification.model');
-const UserNotification = require('../models/UserNotification.model');
 const asyncHandler = require('../middleware/asyncHandler');
 const ErrorResponse = require('../utils/ErrorResponse');
+const Notification = require('../models/Notification.model');
+const UserNotification = require('../models/UserNotification.model');
 
 // @desc    Create group
 // @route   POST /api/v1/groups
@@ -109,7 +109,7 @@ exports.getGroup = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/v1/groups/:id/removeStudent/:studentId
 // @access  Private
 exports.removeStudentFromGroup = asyncHandler(async (req, res, next) => {
-  const group = await Group.findById(req.params.id);
+  let group = await Group.findById(req.params.id);
   const student = await User.findById(req.params.studentId);
   const user = req.user;
   // Check if group exists
@@ -141,10 +141,21 @@ exports.removeStudentFromGroup = asyncHandler(async (req, res, next) => {
     );
   }
   // Remove student from group
-  const newMembers = group.members.filter(id => id !== student.id);
-  await group.updateOne({
-    members: newMembers
-  });
+  const newMembers = group.members.filter(
+    id => id.toString() !== student.id.toString()
+  );
+  group = await Group.findByIdAndUpdate(
+    group.id,
+    {
+      members: newMembers
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  )
+    .populate('owner')
+    .populate('members');
   // Create notification for student
   const notification = await Notification.create({
     text: `Użytkownik ${user.firstName} ${user.lastName} usunął Cię z grupy ${group.name}.`
@@ -165,7 +176,7 @@ exports.removeStudentFromGroup = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.addStudent = asyncHandler(async (req, res, next) => {
   const student = await User.findOne({ email: req.params.email });
-  const group = await Group.findById(req.params.id);
+  let group = await Group.findById(req.params.id);
   const user = req.user;
   // Check if student exists
   if (!student) {
@@ -184,12 +195,30 @@ exports.addStudent = asyncHandler(async (req, res, next) => {
   if (group.owner.toString() !== user.id.toString() && user.role !== 'admin') {
     return next(new ErrorResponse('Not authorized.', 401));
   }
+  // Check if user already is a member of a group
+  if (group.members.includes(student.id)) {
+    return next(
+      new ErrorResponse(
+        `User with id ${student.id} is already a member of a group with id ${group.id}`,
+        400
+      )
+    );
+  }
   // Add student to group
   const newMembers = group.members;
   newMembers.push(student.id);
-  await group.updateOne({
-    members: newMembers
-  });
+  group = await Group.findByIdAndUpdate(
+    group.id,
+    {
+      members: newMembers
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  )
+    .populate('owner')
+    .populate('members');
   // Create notification
   const notification = await Notification.create({
     text: `Użytkownik ${user.firstName} ${user.lastName} dodał Cię do grupy ${group.name}.`
