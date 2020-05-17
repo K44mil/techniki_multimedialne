@@ -12,7 +12,10 @@ import {
   DELETE_GROUP_FAIL,
   ADD_STUDENT_START,
   ADD_STUDENT_SUCCESS,
-  ADD_STUDENT_FAIL
+  ADD_STUDENT_FAIL,
+  DELETE_STUDENT_START,
+  DELETE_STUDENT_SUCCESS,
+  DELETE_STUDENT_FAIL
 } from './types';
 import { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
@@ -109,6 +112,29 @@ export const addStudent = ({ id, email }) => async dispatch => {
   } catch (err) {
     dispatch({
       type: ADD_STUDENT_FAIL
+    });
+  }
+};
+
+export const deleteStudent = (id, studentId) => async dispatch => {
+  dispatch({
+    type: DELETE_STUDENT_START
+  });
+
+  try {
+    const res = await client.put(
+      `/api/v1/groups/${id}/removeStudent/${studentId}`
+    );
+    console.log(res.data);
+
+    dispatch({
+      type: DELETE_STUDENT_SUCCESS,
+      payload: res.data
+    });
+    dispatch(getGroupById(id));
+  } catch (err) {
+    dispatch({
+      type: DELETE_STUDENT_FAIL
     });
   }
 };

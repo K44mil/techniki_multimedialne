@@ -137,7 +137,11 @@ const Menu = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
                 <p className='p-dashboard'>10</p>
               </Grid>
               <Grid item xs={12} sm={12}>
-                <button className='dashboard-button' type='submit'>
+                <button
+                  className='dashboard-button'
+                  type='submit'
+                  onClick={() => history.push('/dashboard')}
+                >
                   Sprawdź zadania
                 </button>
               </Grid>

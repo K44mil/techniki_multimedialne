@@ -5,7 +5,7 @@ import { Redirect, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { getGroupById, addStudent } from '../../actions/group';
+import { getGroupById, addStudent, deleteStudent } from '../../actions/group';
 import MUIDataTable from 'mui-datatables';
 import { CircularProgress } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -23,27 +23,29 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const columns = [
-  {
-    name: 'id',
-    options: {
-      display: 'false'
-    }
-  },
-  'E-mail',
-  'Imię',
-  'Nazwisko'
-];
 const GroupProfile = ({
   group: { group, loading },
   auth: { user },
   getGroupById,
-  addStudent
+  addStudent,
+  deleteStudent
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
   const addForm = useRef(null);
+  const columns = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
+    },
+    'E-mail',
+    'Imię',
+    'Nazwisko',
+    ''
+  ];
 
   useEffect(group => {
     if (group !== null && group !== undefined) {
@@ -100,8 +102,28 @@ const GroupProfile = ({
     });
   });
 
+  const deleteStudentButton = (
+    <button
+      className='dashboard-button'
+      onClick={() => {
+        setTimeout(() => {
+          deleteStudent(group.data._id, tableID.ID);
+        }, 200);
+      }}
+    >
+      Usuń
+    </button>
+  );
+
   const data = myStudents.map(el => {
     return el.filter(value => value !== undefined);
+  });
+
+  const data2 = data.map(el => {
+    if (user !== null && user.role === 'teacher') {
+      el.push(deleteStudentButton);
+    }
+    return el;
   });
 
   console.log(myStudents);
@@ -177,7 +199,7 @@ const GroupProfile = ({
                   options={TableOptions}
                   title='Członkowie grupy'
                   columns={columns}
-                  data={data}
+                  data={data2}
                 />
               ) : (
                 <MUIDataTable
@@ -198,7 +220,8 @@ GroupProfile.propTypes = {
   group: PropTypes.object.isRequired,
   getGroupById: PropTypes.func.isRequired,
   addStudent: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  deleteStudent: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -207,5 +230,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getGroupById, addStudent }
+  { getGroupById, addStudent, deleteStudent }
 )(GroupProfile);
