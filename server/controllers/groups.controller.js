@@ -1,8 +1,8 @@
+const asyncHandler = require('../middleware/asyncHandler');
+const ErrorResponse = require('../utils/ErrorResponse');
 const Group = require('../models/Group.model');
 const User = require('../models/User.model');
 const Invitation = require('../models/Invitation.model');
-const asyncHandler = require('../middleware/asyncHandler');
-const ErrorResponse = require('../utils/ErrorResponse');
 const Notification = require('../models/Notification.model');
 const UserNotification = require('../models/UserNotification.model');
 

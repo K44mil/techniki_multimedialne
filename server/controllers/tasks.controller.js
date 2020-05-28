@@ -148,7 +148,6 @@ exports.deleteTask = asyncHandler(async (req, res, next) => {
 // @desc    Add solution to task
 // @route   POST /api/v1/tasks/:id/addSolution
 // @access  Private
-// TODO:
 exports.addTaskSolution = asyncHandler(async (req, res, next) => {
     const task = await Task.findById(req.params.id);
     const user = req.user;
@@ -223,7 +222,6 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
         });
     }
     // Create notification
-    // Create notification
     const notification = await Notification.create({
         text: `Użytkownik ${user.firstName} ${user.lastName} dodał odpowiedź na Twoje zadanie w grupie ${group.name}.`
     });
@@ -235,5 +233,54 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
     res.status(200).json({
         success: true,
         data: taskSolution
+    });
+});
+
+// @desc    Get task by id
+// @route   POST /api/v1/tasks/:id
+// @access  Private
+exports.getTask = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const task = await Task.findById(req.params.id);
+    // Check if task exists
+    if(!task) {
+        return next(
+            new ErrorResponse(`Task with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Check if authorized
+    const group = Group.findById(task.group);
+    if (!group) {
+        return next(
+            new ErrorResponse(`Task group with id ${task.group} does not exist.`, 400)
+        );
+    }
+    if (!task.students.includes(user.id) && user.id.toString() !== group.owner.toString()) {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: task
+    });
+});
+
+// @desc    Get task solution by id
+// @route   GET /api/v1/tasks/taskSolution/:id
+// @access  Private
+exports.getTaskSolution = asyncHandler(async (req, res, next) => {
+    const solution = await TaskSolution.findById(req.params.id);
+    // Check if solution exists
+    if (!solution) {
+        return next(
+            new ErrorResponse(`Task solution with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: solution
     });
 });
