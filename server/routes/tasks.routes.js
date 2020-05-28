@@ -3,7 +3,9 @@ const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
 const {
     createTask,
-    deleteTask
+    deleteTask,
+    getTask,
+    getTaskSolution
 } = require('../controllers/tasks.controller');
 
 router
@@ -12,6 +14,11 @@ router
 
 router
     .route('/:id')
+    .get(protect, getTask)
     .delete(protect, authorize('teacher', 'admin'), deleteTask);
+
+router
+    .route('/taskSolution/:id')
+    .get(protect, getTaskSolution);
 
 module.exports = router;
