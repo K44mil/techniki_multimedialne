@@ -284,3 +284,16 @@ exports.getTaskSolution = asyncHandler(async (req, res, next) => {
         data: solution
     });
 });
+
+// @desc    Get tasks
+// @route   GET /api/v1/tasks
+// @access  Private
+exports.getTasks = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const tasks = await Task.find({ createdBy: user.id });
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: tasks
+    });
+});
