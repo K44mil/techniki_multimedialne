@@ -18,6 +18,8 @@ const invitationsRoutes = require('./routes/invitations.routes');
 const tasksRoutes = require('./routes/tasks.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const notificationsRoutes = require('./routes/notifications.routes');
+const filesRoutes = require('./routes/files.routes');
+const ratesRoutes = require('./routes/rates.routes');
 
 const app = express();
 
@@ -39,6 +41,8 @@ app.use('/api/v1/invitations', invitationsRoutes);
 app.use('/api/v1/tasks', tasksRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/notifications', notificationsRoutes);
+app.use('/api/v1/files', filesRoutes);
+app.use('/api/v1/rates', ratesRoutes);
 
 // Set error handler
 app.use(errorHandler);

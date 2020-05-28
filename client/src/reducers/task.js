@@ -9,7 +9,8 @@ import {
 
 const initialState = {
   loading: true,
-  task: null
+  task: null,
+  tasks: []
 };
 
 export default function(state = initialState, action) {
@@ -35,7 +36,7 @@ export default function(state = initialState, action) {
       };
     case DELETE_TASK_SUCCESS:
       return {
-        task: state.task.filter(({ id }) => id !== payload),
+        tasks: state.task.filter(({ id }) => id !== payload),
         loading: false
       };
     default:

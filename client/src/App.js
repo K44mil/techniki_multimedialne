@@ -16,6 +16,7 @@ import PrivateRoute from './components/routing/PrivateRoute';
 
 import './App.css';
 import Notifications from './components/dashboard/Notifications';
+import Tasks from './components/dashboard/Tasks';
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -43,6 +44,7 @@ const App = () => {
               path='/notifications'
               component={Notifications}
             />
+            <PrivateRoute exact path='/tasks' component={Tasks} />
           </Switch>
         </Provider>
       </Fragment>

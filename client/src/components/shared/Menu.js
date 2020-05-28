@@ -29,7 +29,7 @@ const Menu = ({
     setAddOpen(!addOpen);
   };
 
-  const studentButton = (
+  const studentButtonGroups = (
     <Grid item xs={12} sm={12}>
       <button
         className='dashboard-button'
@@ -43,7 +43,7 @@ const Menu = ({
     </Grid>
   );
 
-  const teacherButton = (
+  const teacherButtonGroups = (
     <>
       <Grid item xs={12} sm={6}>
         <button
@@ -63,6 +63,43 @@ const Menu = ({
           }}
         >
           Twoje grupy
+        </button>
+      </Grid>
+    </>
+  );
+
+  const studentButtonTasks = (
+    <>
+      <Grid item xs={12} sm={12}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/dashboard')}
+        >
+          Twoje zadania
+        </button>
+      </Grid>
+    </>
+  );
+
+  const teacherButtonTasks = (
+    <>
+      <Grid item xs={12} sm={6}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/dashboard')}
+        >
+          Do oceny
+        </button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/tasks')}
+        >
+          Twoje zadania
         </button>
       </Grid>
     </>
@@ -107,8 +144,8 @@ const Menu = ({
                 </p>
               </Grid>
               {isAuthenticated && user !== null && user.role === 'student'
-                ? studentButton
-                : teacherButton}
+                ? studentButtonGroups
+                : teacherButtonGroups}
             </Grid>
           </div>
         </Grid>
@@ -151,15 +188,10 @@ const Menu = ({
                   {dashboard !== null ? dashboard.todo.length : 0}
                 </p>
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <button
-                  className='dashboard-button'
-                  type='submit'
-                  onClick={() => history.push('/dashboard')}
-                >
-                  Sprawdź zadania
-                </button>
-              </Grid>
+
+              {isAuthenticated && user !== null && user.role === 'student'
+                ? studentButtonTasks
+                : teacherButtonTasks}
             </Grid>
           </div>
         </Grid>

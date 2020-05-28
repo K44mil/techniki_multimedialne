@@ -33,18 +33,18 @@ const Dashboard = ({
     </button>
   );
 
-  const deleteTaskButton = (
-    <button
-      className='dashboard-button'
-      onClick={() => {
-        setTimeout(() => {
-          deleteTask(tableID.ID);
-        }, 200);
-      }}
-    >
-      Usuń
-    </button>
-  );
+  // const deleteTaskButton = (
+  //   <button
+  //     className='dashboard-button'
+  //     onClick={() => {
+  //       setTimeout(() => {
+  //         deleteTask(tableID.ID);
+  //       }, 200);
+  //     }}
+  //   >
+  //     Usuń
+  //   </button>
+  // );
 
   const columns = [
     {
@@ -55,7 +55,6 @@ const Dashboard = ({
     },
     'Nazwa',
     'Termin oddania',
-    '',
     ''
   ];
   if (loading || (loading && dashboard === null)) {
@@ -86,11 +85,7 @@ const Dashboard = ({
     });
 
     const dataButtons = data.map(el => {
-      if (user !== null && user.role === 'teacher') {
-        el.push(showTaskButton);
-        el.push(deleteTaskButton);
-        return el;
-      } else if (user !== null) {
+      if (user !== null) {
         el.push(showTaskButton);
         return el;
       }
