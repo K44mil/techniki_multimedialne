@@ -9,12 +9,15 @@ import { getGroupById, addStudent, deleteStudent } from '../../actions/group';
 import MUIDataTable from 'mui-datatables';
 import { CircularProgress } from '@material-ui/core';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Modal } from '../shared/Modal';
 import {
   tableID,
   TableOptions
 } from '../../shared/consts/TableOption.constants';
 import AddStudentForm from '../dashboard/AddStudentForm';
+import CreateTaskForm, { files } from '../dashboard/CreateTaskForm';
+import { createTask } from '../../actions/task';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,7 +31,8 @@ const GroupProfile = ({
   auth: { user },
   getGroupById,
   addStudent,
-  deleteStudent
+  deleteStudent,
+  createTask
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -54,9 +58,14 @@ const GroupProfile = ({
   }, []);
 
   const [addOpen, setAddOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const handleAddModal = () => {
     setAddOpen(!addOpen);
+  };
+
+  const handleCreateModal = () => {
+    setCreateOpen(!createOpen);
   };
 
   const handleAdd = (values, actions) => {
@@ -69,6 +78,25 @@ const GroupProfile = ({
     setAddOpen(!addOpen);
   };
 
+  const isEmpty = file => {
+    return file !== '';
+  };
+
+  const handleCreate = (values, actions) => {
+    const myFiles = files.filter(isEmpty);
+
+    const data = {
+      name: values.name,
+      description: values.description,
+      expireDate: values.date,
+      files: myFiles,
+      groupId: group.data._id
+    };
+    dispatch(createTask(data));
+    actions.resetForm({});
+    setCreateOpen(!createOpen);
+  };
+
   const addFormProps = {
     initialState: {
       email: ''
@@ -76,6 +104,19 @@ const GroupProfile = ({
     setRef: addForm,
     handleSubmit: (values, actions) => {
       handleAdd(values, actions);
+    }
+  };
+
+  const addCreateProps = {
+    initialState: {
+      name: '',
+      description: '',
+      expireDate: '',
+      files: []
+    },
+    setRef: addForm,
+    handleSubmit: (values, actions) => {
+      handleCreate(values, actions);
     }
   };
 
@@ -140,6 +181,18 @@ const GroupProfile = ({
         fullWidth
       />
 
+      <Modal
+        open={createOpen}
+        onClose={handleCreateModal}
+        onClickSubmit={handleCreate}
+        title='Stwórz zadanie'
+        dialogContent={<CreateTaskForm {...addCreateProps} />}
+        maxWidth='sm'
+        labelPrimary='Zakończ'
+        dividers
+        fullWidth
+      />
+
       <section className='container container-dashboard'>
         <div className={classes.root}>
           <Grid container spacing={5}>
@@ -153,6 +206,19 @@ const GroupProfile = ({
                 </span>{' '}
                 Grupy
               </button>
+              {user !== null && user.role === 'teacher' ? (
+                <button
+                  className='dashboard-button task-btn'
+                  onClick={handleCreateModal}
+                >
+                  <span className='back-icon'>
+                    <AssignmentIcon />
+                  </span>{' '}
+                  Stwórz zadanie
+                </button>
+              ) : (
+                ''
+              )}
               <div className='bg-light'>
                 <div className='container-profile'>
                   <h2 className='text-primary'>
@@ -219,7 +285,8 @@ GroupProfile.propTypes = {
   getGroupById: PropTypes.func.isRequired,
   addStudent: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  deleteStudent: PropTypes.func.isRequired
+  deleteStudent: PropTypes.func.isRequired,
+  createTask: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -228,5 +295,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getGroupById, addStudent, deleteStudent }
+  { getGroupById, addStudent, deleteStudent, createTask }
 )(GroupProfile);

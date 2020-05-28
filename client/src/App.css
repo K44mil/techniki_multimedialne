@@ -251,8 +251,7 @@ img {
   border: 1px solid #ccc;
 }
 
-.form input[type='textarea'] {
-}
+.form input[type='textarea'] {}
 
 .form input[type='submit'],
 button {
@@ -300,6 +299,12 @@ button {
 }
 
 .profile-btn {
+  width: 20%;
+}
+
+.task-btn {
+  position: relative;
+  right: -60%;
   width: 20%;
 }
 
