@@ -5,11 +5,13 @@ const {
     createTask,
     deleteTask,
     getTask,
-    getTaskSolution
+    getTaskSolution,
+    getTasks
 } = require('../controllers/tasks.controller');
 
 router
     .route('/')
+    .get(protect, authorize('teacher', 'admin'), getTasks)
     .post(protect, authorize('teacher', 'admin'), createTask);
 
 router
