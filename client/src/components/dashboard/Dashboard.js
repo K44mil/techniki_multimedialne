@@ -1,5 +1,6 @@
 import React from 'react';
 import Moment from 'react-moment';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
@@ -11,7 +12,7 @@ import {
   TableOptions,
   tableID
 } from '../../shared/consts/TableOption.constants';
-import { deleteTask } from '../../actions/task';
+import { getTaskById, getTaskSolutionById } from '../../actions/task';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,31 +21,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Dashboard = ({
-  auth: { user = {}, dashboard = {}, loading, isAuthenticated }
+  auth: { user = {}, dashboard = {}, loading, isAuthenticated },
+  getTaskById,
+  getTaskSolutionById
 }) => {
   const classes = useStyles();
-
-  const showTaskButton = (
-    <button className='dashboard-button'>
-      {' '}
-      {isAuthenticated && user !== null && user.role === 'student'
-        ? 'Pokaż'
-        : 'Sprawdź'}{' '}
-    </button>
-  );
-
-  // const deleteTaskButton = (
-  //   <button
-  //     className='dashboard-button'
-  //     onClick={() => {
-  //       setTimeout(() => {
-  //         deleteTask(tableID.ID);
-  //       }, 200);
-  //     }}
-  //   >
-  //     Usuń
-  //   </button>
-  // );
+  const history = useHistory();
 
   const columns = [
     {
@@ -57,6 +39,21 @@ const Dashboard = ({
     'Termin oddania',
     ''
   ];
+
+  const teacherColumns = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
+    },
+    'Termin wysłania',
+    'Imię',
+    'Nazwisko',
+    'E-mail',
+    ''
+  ];
+
   if (loading || (loading && dashboard === null)) {
     return (
       <div className='loader'>
@@ -65,24 +62,73 @@ const Dashboard = ({
     );
   }
   if (dashboard) {
-    const myTasks = dashboard.todo.map(el => {
-      return Object.keys(el).map(key => {
-        if (key === '_id' || key === 'name' || key === 'expireAt') {
-          return el[key];
+    const showTaskButton = (
+      <button
+        className='dashboard-button'
+        onClick={
+          isAuthenticated && user !== null && user.role === 'student'
+            ? () => {
+                setTimeout(() => {
+                  getTaskById(tableID.ID);
+                  history.push('/taskProfile');
+                }, 100);
+              }
+            : () => {
+                setTimeout(() => {
+                  getTaskSolutionById(tableID.ID);
+                  history.push('/taskProfile');
+                }, 100);
+              }
         }
+      >
+        {' '}
+        {isAuthenticated && user !== null && user.role === 'student'
+          ? 'Pokaż'
+          : 'Sprawdź'}{' '}
+      </button>
+    );
+    const myTasks = {};
+    if (user !== null && user.role === 'student') {
+      myTasks.myTask = dashboard.todo.map(el => {
+        return Object.keys(el).map(key => {
+          if (key === '_id' || key === 'name' || key === 'expireAt') {
+            return el[key];
+          }
+        });
       });
-    });
+    } else {
+      myTasks.myTask = dashboard.todo.map(el => {
+        return Object.keys(el).map(key => {
+          if (
+            key === '_id' ||
+            key === 'createdAt' ||
+            key === 'userFirstName' ||
+            key === 'userLastName' ||
+            key === 'userEmail'
+          ) {
+            return el[key];
+          }
+        });
+      });
+    }
+    console.log(myTasks.myTask);
 
-    const data = myTasks.map(el => {
+    const data = myTasks.myTask.map(el => {
       return el.filter(value => value !== undefined);
     });
-
     console.log(data);
-    data.forEach(el => {
-      el[el.length - 1] = (
-        <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
-      );
-    });
+
+    if (user !== null && user.role === 'student') {
+      data.forEach(el => {
+        el[el.length - 1] = (
+          <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
+        );
+      });
+    } else {
+      data.forEach(el => {
+        el[1] = <Moment format='DD/MM/YYYY'>{el[1]}</Moment>;
+      });
+    }
 
     const dataButtons = data.map(el => {
       if (user !== null) {
@@ -102,6 +148,15 @@ const Dashboard = ({
                   ? 'Zadania do zrobienia'
                   : 'Zadania do sprawdzenia'}{' '}
               </h1>
+              {user !== null && user.role === 'teacher' ? (
+                <button
+                  className='dashboard-button profile-btn'
+                  onClick={() => history.push('/rateProfile')}
+                >
+                  <span className='back-icon'>{/* <PersonAddIcon /> */}</span>{' '}
+                  Wystawione oceny
+                </button>
+              ) : null}
               <MUIDataTable
                 title={
                   isAuthenticated && user !== null && user.role === 'student'
@@ -109,7 +164,11 @@ const Dashboard = ({
                     : 'Zadania do sprawdzenia'
                 }
                 data={dataButtons}
-                columns={columns}
+                columns={
+                  isAuthenticated && user !== null && user.role === 'student'
+                    ? columns
+                    : teacherColumns
+                }
                 options={TableOptions}
               />
             </Grid>
@@ -149,7 +208,8 @@ const Dashboard = ({
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
-  task: PropTypes.func.isRequired
+  getTaskById: PropTypes.func.isRequired,
+  getTaskSolutionById: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -157,5 +217,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { deleteTask }
+  { getTaskById, getTaskSolutionById }
 )(Dashboard);

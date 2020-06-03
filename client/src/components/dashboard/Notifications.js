@@ -3,7 +3,7 @@ import { connect, useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { CircularProgress } from '@material-ui/core';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Moment from 'react-moment';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
@@ -72,7 +72,6 @@ const Notifications = ({
         }
       });
     });
-    console.log(myNotifications);
 
     const data = myNotifications.map(el => {
       return el.filter(value => value !== undefined);

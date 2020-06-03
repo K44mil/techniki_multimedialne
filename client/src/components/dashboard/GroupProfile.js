@@ -38,6 +38,7 @@ const GroupProfile = ({
   const dispatch = useDispatch();
   const history = useHistory();
   const addForm = useRef(null);
+  const createForm = useRef(null);
   const columns = [
     {
       name: 'id',
@@ -51,11 +52,14 @@ const GroupProfile = ({
     ''
   ];
 
-  useEffect(group => {
-    if (group !== null && group !== undefined) {
-      dispatch(getGroupById(group.data.id));
-    }
-  }, []);
+  useEffect(
+    group => {
+      if (group !== null && group !== undefined) {
+        dispatch(getGroupById(group.data.id));
+      }
+    },
+    [dispatch, getGroupById]
+  );
 
   const [addOpen, setAddOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -66,6 +70,7 @@ const GroupProfile = ({
 
   const handleCreateModal = () => {
     setCreateOpen(!createOpen);
+    files.length = 0;
   };
 
   const handleAdd = (values, actions) => {
@@ -88,7 +93,7 @@ const GroupProfile = ({
     const data = {
       name: values.name,
       description: values.description,
-      expireDate: values.date,
+      expireDate: values.expireDate,
       files: myFiles,
       groupId: group.data._id
     };
@@ -114,7 +119,7 @@ const GroupProfile = ({
       expireDate: '',
       files: []
     },
-    setRef: addForm,
+    setRef: createForm,
     handleSubmit: (values, actions) => {
       handleCreate(values, actions);
     }
@@ -172,7 +177,7 @@ const GroupProfile = ({
       <Modal
         open={addOpen}
         onClose={handleAddModal}
-        onClickSubmit={handleAdd}
+        onClickSubmit={handleAddModal}
         title='Dodaj ucznia'
         dialogContent={<AddStudentForm {...addFormProps} />}
         maxWidth='sm'
@@ -184,7 +189,7 @@ const GroupProfile = ({
       <Modal
         open={createOpen}
         onClose={handleCreateModal}
-        onClickSubmit={handleCreate}
+        onClickSubmit={handleCreateModal}
         title='Stwórz zadanie'
         dialogContent={<CreateTaskForm {...addCreateProps} />}
         maxWidth='sm'

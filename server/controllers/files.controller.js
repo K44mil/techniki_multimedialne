@@ -7,16 +7,16 @@ const path = require('path');
 // @route   GET /api/v1/files/download/:id
 // @access  Private
 exports.downloadFile = asyncHandler(async (req, res, next) => {
-    const file = await File.findById(req.params.id);
-    if (!file) {
-        return next(
-            new ErrorResponse(`File not found with id of ${req.params.id}`, 404)
-        );
-    }
-    const filePath = `${path.resolve(__dirname, '..')}${file.path}`;
-    res.download(filePath, file.name);
+  const file = await File.findById(req.params.id);
+  if (!file) {
+    return next(
+      new ErrorResponse(`File not found with id of ${req.params.id}`, 404)
+    );
+  }
+  const filePath = `${path.resolve(__dirname, '..')}${file.path}`;
+  res.download(filePath, file.name);
 });
 
 exports.getFiles = asyncHandler(async (req, res, next) => {
-    res.status(200).json({ success: true });
+  res.status(200).json({ success: true });
 });

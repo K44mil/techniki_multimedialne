@@ -35,7 +35,7 @@ exports.createTask = asyncHandler(async (req, res, next) => {
   // --File upload-
   // Check file size
   const taskFiles = [];
-  if (req.files && req.files.fileList) {
+  if (req.files && req.files.files) {
     const files =
       req.files.files.length === undefined
         ? new Array(req.files.files)
@@ -73,6 +73,7 @@ exports.createTask = asyncHandler(async (req, res, next) => {
     name,
     description,
     group: groupId,
+    createdBy: user.id,
     expireAt,
     files: taskFiles
   });
@@ -152,7 +153,7 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
   const task = await Task.findById(req.params.id);
   const user = req.user;
   const group = await Group.findById(task.group);
-  const { text } = req.body.text || '';
+  const { text } = req.body || '';
   // Check if task exists
   if (!task) {
     return next(
@@ -164,7 +165,7 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Not authorized.', 401));
   }
   // Check if solution exist
-  let taskSolution = await TaskSolution.find({
+  let taskSolution = await TaskSolution.findOne({
     user: user.id,
     task: task.id
   });
@@ -227,7 +228,6 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
   const notification = await Notification.create({
     text: `Użytkownik ${user.firstName} ${user.lastName} dodał odpowiedź na Twoje zadanie w grupie ${group.name}.`
   });
-
   await UserNotification.create({
     user: group.owner,
     notification: notification.id
@@ -244,7 +244,8 @@ exports.addTaskSolution = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.getTask = asyncHandler(async (req, res, next) => {
   const user = req.user;
-  const task = await Task.findById(req.params.id);
+  const task = await Task.findById(req.params.id).populate('files');
+
   // Check if task exists
   if (!task) {
     return next(
@@ -275,7 +276,7 @@ exports.getTask = asyncHandler(async (req, res, next) => {
 // @route   GET /api/v1/tasks/taskSolution/:id
 // @access  Private
 exports.getTaskSolution = asyncHandler(async (req, res, next) => {
-  const solution = await TaskSolution.findById(req.params.id);
+  let solution = await TaskSolution.findById(req.params.id).lean();
   // Check if solution exists
   if (!solution) {
     return next(
@@ -285,9 +286,32 @@ exports.getTaskSolution = asyncHandler(async (req, res, next) => {
       )
     );
   }
+  const file = await File.findById(solution.file);
+  if (file) {
+    solution.fileName = file.name;
+  }
+  const task = await Task.findById(solution.task);
+  if (task) {
+    solution.taskName = task.name;
+    solution.taskCreatedAt = task.createdAt;
+    solution.taskExpireAt = task.expireAt;
+  }
   // Send response
   res.status(200).json({
     success: true,
     data: solution
+  });
+});
+
+// @desc    Get tasks
+// @route   GET /api/v1/tasks
+// @access  Private
+exports.getTasks = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  const tasks = await Task.find({ createdBy: user.id });
+  // Send response
+  res.status(200).json({
+    success: true,
+    data: tasks
   });
 });

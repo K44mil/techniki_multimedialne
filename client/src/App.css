@@ -315,6 +315,14 @@ button {
   filter: brightness(85%);
 }
 
+a:hover {
+  -webkit-transition-duration: 0.4s;
+  /* Safari */
+  transition-duration: 0.4s;
+  color: red;
+  /* filter: brightness(85%); */
+}
+
 .line {
   height: 1px;
   background: #ccc;

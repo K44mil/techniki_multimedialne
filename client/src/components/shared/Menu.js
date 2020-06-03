@@ -10,10 +10,11 @@ import WorkIcon from '@material-ui/icons/Work';
 import { Modal } from '../shared/Modal';
 import GroupForm from '../dashboard/GroupForm';
 import { addGroup } from '../../actions/group';
-
+import { getRates } from '../../actions/rate';
 const Menu = ({
   auth: { user = {}, dashboard = {}, isAuthenticated },
-  addGroup
+  addGroup,
+  getRates
 }) => {
   const addForm = useRef(null);
   const history = useHistory();
@@ -70,13 +71,25 @@ const Menu = ({
 
   const studentButtonTasks = (
     <>
-      <Grid item xs={12} sm={12}>
+      <Grid item xs={12} sm={6}>
         <button
           className='dashboard-button'
           type='submit'
           onClick={() => history.push('/dashboard')}
         >
           Twoje zadania
+        </button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => {
+            getRates();
+            history.push('/rateProfile');
+          }}
+        >
+          Twoje oceny
         </button>
       </Grid>
     </>
@@ -223,7 +236,8 @@ const Menu = ({
 
 Menu.propTypes = {
   auth: PropTypes.object.isRequired,
-  addGroup: PropTypes.func.isRequired
+  addGroup: PropTypes.func.isRequired,
+  getRates: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -231,5 +245,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { addGroup }
+  { addGroup, getRates }
 )(Menu);
