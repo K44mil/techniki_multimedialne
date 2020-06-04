@@ -5,6 +5,7 @@ import group from './group';
 import notification from './notification';
 import task from './task';
 import rate from './rate';
+import message from './message';
 
 export default combineReducers({
   alert,
@@ -12,5 +13,6 @@ export default combineReducers({
   group,
   notification,
   task,
-  rate
+  rate,
+  message
 });

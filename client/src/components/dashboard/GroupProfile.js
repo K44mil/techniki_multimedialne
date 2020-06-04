@@ -5,6 +5,7 @@ import { Redirect, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ChatIcon from '@material-ui/icons/Chat';
 import { getGroupById, addStudent, deleteStudent } from '../../actions/group';
 import MUIDataTable from 'mui-datatables';
 import { CircularProgress } from '@material-ui/core';
@@ -229,6 +230,15 @@ const GroupProfile = ({
                   <h2 className='text-primary'>
                     {group !== null ? group.data.name : ''}
                   </h2>
+                  <button
+                    className='dashboard-button chat-btn'
+                    onClick={() => history.push('/chatRoom')}
+                  >
+                    <span className='back-icon'>
+                      <ChatIcon />
+                    </span>{' '}
+                    Chat
+                  </button>
                   <div className='line'></div>
                   <h3 className='text-dark'>Właściciel</h3>
                   <p>

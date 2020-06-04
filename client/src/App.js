@@ -19,6 +19,7 @@ import Notifications from './components/dashboard/Notifications';
 import Tasks from './components/dashboard/Tasks';
 import TaskProfile from './components/dashboard/TaskProfile';
 import RateProfile from './components/dashboard/RateProfile';
+import Chat from './components/shared/Chat';
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -49,6 +50,7 @@ const App = () => {
             <PrivateRoute exact path='/tasks' component={Tasks} />
             <PrivateRoute exact path='/taskProfile' component={TaskProfile} />
             <PrivateRoute exact path='/rateProfile' component={RateProfile} />
+            <PrivateRoute exact path='/chatRoom' component={Chat} />
           </Switch>
         </Provider>
       </Fragment>
