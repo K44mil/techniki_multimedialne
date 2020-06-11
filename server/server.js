@@ -1,9 +1,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const http = require('http');
 const fileupload = require('express-fileupload');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const { userJoin, userLeave, getRoomUsers } = require('./utils/chatUser');
 
 // Load env vars
 dotenv.config({ path: './config/config.env' });
@@ -22,6 +24,30 @@ const filesRoutes = require('./routes/files.routes');
 const ratesRoutes = require('./routes/rates.routes');
 
 const app = express();
+const httpServer = http.Server(app);
+const io = require('socket.io')(httpServer);
+
+io.on('connection', socket => {
+  // User join to room
+  socket.on('joinRoom', ({ user, room }) => {
+    const chatUser = userJoin(socket.id, user, room);
+    socket.join(chatUser.room);
+
+    // Send users and room info
+    io.to(chatUser.room).emit('roomUsers', {
+      chatUsers: getRoomUsers(chatUser.room)
+    });
+  });
+
+  socket.on('disconnect', () => {
+    const chatUser = userLeave(socket.id);
+    console.log('user disconnect');
+    // Send users and room info
+    io.to(chatUser.room).emit('roomUsers', {
+      chatUsers: getRoomUsers(chatUser.room)
+    });
+  });
+});
 
 // Body parser
 app.use(express.json());
@@ -48,7 +74,7 @@ app.use('/api/v1/rates', ratesRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const server = app.listen(
+const server = httpServer.listen(
   PORT,
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}.`)
 );

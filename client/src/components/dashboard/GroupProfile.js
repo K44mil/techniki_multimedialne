@@ -26,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     margin: 10
   }
 }));
-
+export const groupId = {};
 const GroupProfile = ({
   group: { group, loading },
   auth: { user },
@@ -52,6 +52,9 @@ const GroupProfile = ({
     'Nazwisko',
     ''
   ];
+  if (group && group !== undefined)
+    localStorage.setItem('groupId', group.data._id);
+  console.log(localStorage.getItem('groupId'));
 
   useEffect(
     group => {
