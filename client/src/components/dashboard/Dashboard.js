@@ -1,15 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
+import Moment from 'react-moment';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
+import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import GroupIcon from '@material-ui/icons/Group';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import EmailIcon from '@material-ui/icons/Email';
 import MUIDataTable from 'mui-datatables';
-import { Modal } from '../shared/Modal';
-import Group from './Group';
-import { addGroup } from '../../actions/group';
+import Menu from '../shared/Menu';
+import {
+  TableOptions,
+  tableID
+} from '../../shared/consts/TableOption.constants';
+import { getTaskById, getTaskSolutionById } from '../../actions/task';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,176 +20,196 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const options = {
-  sortFilterList: false,
-  filter: false,
-  print: false,
-  download: false,
-  selectableRows: 'none',
-  viewColumns: false,
-  searchPlaceholder: 'Your Custom Search Placeholder'
-};
-
-const Dashboard = ({ auth: { user = {}, isAuthenticated }, addGroup }) => {
+const Dashboard = ({
+  auth: { user = {}, dashboard = {}, loading, isAuthenticated },
+  getTaskById,
+  getTaskSolutionById
+}) => {
   const classes = useStyles();
-  const addForm = useRef(null);
+  const history = useHistory();
 
-  const [addOpen, setAddOpen] = useState(false);
-
-  const handleAddModal = () => {
-    setAddOpen(!addOpen);
-  };
-
-  const studentButton = (
-    <Grid item xs={12} sm={12}>
-      <button className='dashboard-button' type='submit'>
-        Twoje grupy
-      </button>
-    </Grid>
-  );
-
-  const tableButton = (
-    <button className='dashboard-button'>
-      {' '}
-      {isAuthenticated && user !== null && user.role === 'student'
-        ? 'Pokaż'
-        : 'Sprawdź'}{' '}
-    </button>
-  );
-
-  const columns = ['Autor', 'Zadanie', 'Termin', ''];
-  const data = [
-    ['Patryk Bochnak', 'Task1', '04.05.2020', tableButton],
-    ['Kamil Drozd', 'Task1', '02.05.2020', tableButton]
+  const columns = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
+    },
+    'Nazwa',
+    'Termin oddania',
+    ''
   ];
 
-  const teacherButton = (
-    <>
-      <Grid item xs={12} sm={6}>
-        <button
-          className='dashboard-button'
-          type='submit'
-          onClick={handleAddModal}
-        >
-          Nowa grupa
-        </button>
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <button className='dashboard-button' type='submit'>
-          Twoje grupy
-        </button>
-      </Grid>
-    </>
-  );
-
-  const addFormProps = {
-    initialState: {
-      name: '',
-      description: ''
+  const teacherColumns = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
     },
-    setRef: addForm,
-    handleSubmit: (name, description) => addGroup(name, description)
-  };
+    'Termin wysłania',
+    'Imię',
+    'Nazwisko',
+    'E-mail',
+    ''
+  ];
 
-  return (
-    <section className='container container-dashboard'>
-      <div className={classes.root}>
-        <Modal
-          open={addOpen}
-          onClose={handleAddModal}
-          onClickSubmit={handleAddModal}
-          title='Utwórz grupę'
-          dialogContent={<Group {...addFormProps} />}
-          maxWidth='sm'
-          labelPrimary='Zakończ'
-          dividers
-          fullWidth
-        />
-
-        <Grid container spacing={5}>
-          <Grid item xs>
-            <div className='dashboard-box'>
-              <h1>Moje grupy</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <GroupIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>15</p>
-                </Grid>
-                {isAuthenticated && user !== null && user.role === 'student'
-                  ? studentButton
-                  : teacherButton}
-              </Grid>
-            </div>
-          </Grid>
-
-          <Grid item xs>
-            <div className='dashboard-box box-primary'>
-              <h1>Powiadomienia</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <NotificationsIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>5</p>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <button className='dashboard-button' type='submit'>
-                    Sprawdź powiadomienia
-                  </button>
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-
-          <Grid item xs>
-            <div className='dashboard-box box-secondary'>
-              <h1>Wiadomości</h1>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <EmailIcon fontSize='large' />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <p className='p-dashboard'>10</p>
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <button className='dashboard-button' type='submit'>
-                    Sprawdź wiadomości
-                  </button>
-                </Grid>
-              </Grid>
-            </div>
-          </Grid>
-        </Grid>
-        <Grid container spacing={5}>
-          <Grid item xs>
-            <h1 className='large text-primary'>
-              {' '}
-              {isAuthenticated && user !== null && user.role === 'student'
-                ? 'Zadania do sprawdzenia'
-                : 'Zadania do zrobienia'}{' '}
-            </h1>
-            <MUIDataTable
-              title={
-                isAuthenticated && user !== null && user.role === 'student'
-                  ? 'Zadania do sprawdzenia'
-                  : 'Zadania do zrobienia'
-              }
-              data={data}
-              columns={columns}
-              options={options}
-            />
-          </Grid>
-        </Grid>
+  if (loading || (loading && dashboard === null)) {
+    return (
+      <div className='loader'>
+        <CircularProgress />
       </div>
-    </section>
-  );
+    );
+  }
+  if (dashboard) {
+    const showTaskButton = (
+      <button
+        className='dashboard-button'
+        onClick={
+          isAuthenticated && user !== null && user.role === 'student'
+            ? () => {
+                setTimeout(() => {
+                  getTaskById(tableID.ID);
+                  history.push('/taskProfile');
+                }, 100);
+              }
+            : () => {
+                setTimeout(() => {
+                  getTaskSolutionById(tableID.ID);
+                  history.push('/taskProfile');
+                }, 100);
+              }
+        }
+      >
+        {' '}
+        {isAuthenticated && user !== null && user.role === 'student'
+          ? 'Pokaż'
+          : 'Sprawdź'}{' '}
+      </button>
+    );
+    const myTasks = {};
+    if (user !== null && user.role === 'student') {
+      myTasks.myTask = dashboard.todo.map(el => {
+        return Object.keys(el).map(key => {
+          if (key === '_id' || key === 'name' || key === 'expireAt') {
+            return el[key];
+          }
+        });
+      });
+    } else {
+      myTasks.myTask = dashboard.todo.map(el => {
+        return Object.keys(el).map(key => {
+          if (
+            key === '_id' ||
+            key === 'createdAt' ||
+            key === 'userFirstName' ||
+            key === 'userLastName' ||
+            key === 'userEmail'
+          ) {
+            return el[key];
+          }
+        });
+      });
+    }
+    console.log(myTasks.myTask);
+
+    const data = myTasks.myTask.map(el => {
+      return el.filter(value => value !== undefined);
+    });
+    console.log(data);
+
+    if (user !== null && user.role === 'student') {
+      data.forEach(el => {
+        el[el.length - 1] = (
+          <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
+        );
+      });
+    } else {
+      data.forEach(el => {
+        el[1] = <Moment format='DD/MM/YYYY'>{el[1]}</Moment>;
+      });
+    }
+
+    const dataButtons = data.map(el => {
+      if (user !== null) {
+        el.push(showTaskButton);
+        return el;
+      }
+    });
+    return (
+      <section className='container container-dashboard'>
+        <div className={classes.root}>
+          <Menu />
+          <Grid container spacing={5}>
+            <Grid item xs>
+              <h1 className='large text-primary'>
+                {' '}
+                {isAuthenticated && user !== null && user.role === 'student'
+                  ? 'Zadania do zrobienia'
+                  : 'Zadania do sprawdzenia'}{' '}
+              </h1>
+              {user !== null && user.role === 'teacher' ? (
+                <button
+                  className='dashboard-button profile-btn'
+                  onClick={() => history.push('/rateProfile')}
+                >
+                  <span className='back-icon'>{/* <PersonAddIcon /> */}</span>{' '}
+                  Wystawione oceny
+                </button>
+              ) : null}
+              <MUIDataTable
+                title={
+                  isAuthenticated && user !== null && user.role === 'student'
+                    ? 'Zadania do zrobienia'
+                    : 'Zadania do sprawdzenia'
+                }
+                data={dataButtons}
+                columns={
+                  isAuthenticated && user !== null && user.role === 'student'
+                    ? columns
+                    : teacherColumns
+                }
+                options={TableOptions}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      </section>
+    );
+  } else {
+    return (
+      <section className='container container-dashboard'>
+        <div className={classes.root}>
+          <Menu />
+          <Grid container spacing={5}>
+            <Grid item xs>
+              <h1 className='large text-primary'>
+                {' '}
+                {isAuthenticated && user !== null && user.role === 'student'
+                  ? 'Zadania do zrobienia'
+                  : 'Zadania do sprawdzenia'}{' '}
+              </h1>
+              <MUIDataTable
+                title={
+                  isAuthenticated && user !== null && user.role === 'student'
+                    ? 'Zadania do zrobienia'
+                    : 'Zadania do sprawdzenia'
+                }
+                columns={columns}
+                options={TableOptions}
+              />
+            </Grid>
+          </Grid>
+        </div>
+      </section>
+    );
+  }
 };
 
 Dashboard.propTypes = {
   auth: PropTypes.object.isRequired,
-  addGroup: PropTypes.func.isRequired
+  getTaskById: PropTypes.func.isRequired,
+  getTaskSolutionById: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -194,5 +217,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { addGroup }
+  { getTaskById, getTaskSolutionById }
 )(Dashboard);

@@ -6,13 +6,20 @@ import Register from './components/auth/Register';
 import Login from './components/auth/Login';
 import Alert from './components/shared/Alert';
 import Dashboard from './components/dashboard/Dashboard';
+import Groups from './components/dashboard/Groups';
+import GroupProfile from './components/dashboard/GroupProfile';
 import { Provider } from 'react-redux';
 import store from './store';
-import { loadUser } from './actions/auth';
+import { loadUser, getDashboard } from './actions/auth';
 import setAuthToken from './utils/setAuthToken';
 import PrivateRoute from './components/routing/PrivateRoute';
 
 import './App.css';
+import Notifications from './components/dashboard/Notifications';
+import Tasks from './components/dashboard/Tasks';
+import TaskProfile from './components/dashboard/TaskProfile';
+import RateProfile from './components/dashboard/RateProfile';
+import Chat from './components/shared/Chat';
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -20,6 +27,7 @@ if (localStorage.token) {
 const App = () => {
   useEffect(() => {
     store.dispatch(loadUser());
+    store.dispatch(getDashboard());
   }, []);
   return (
     <Router>
@@ -32,6 +40,17 @@ const App = () => {
             <Route exact path='/register' component={Register} />
             <Route exact path='/login' component={Login} />
             <PrivateRoute exact path='/dashboard' component={Dashboard} />
+            <PrivateRoute exact path='/groups' component={Groups} />
+            <PrivateRoute exact path='/groupProfile' component={GroupProfile} />
+            <PrivateRoute
+              exact
+              path='/notifications'
+              component={Notifications}
+            />
+            <PrivateRoute exact path='/tasks' component={Tasks} />
+            <PrivateRoute exact path='/taskProfile' component={TaskProfile} />
+            <PrivateRoute exact path='/rateProfile' component={RateProfile} />
+            <PrivateRoute exact path='/chatRoom' component={Chat} />
           </Switch>
         </Provider>
       </Fragment>

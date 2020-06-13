@@ -16,7 +16,7 @@ const groupSchema = Yup.object().shape({
     .max(250, VALIDATION_ERRORS.long)
 });
 
-const Group = ({ initialState, handleSubmit }) => (
+const GroupForm = ({ initialState, handleSubmit }) => (
   <Formik
     initialValues={initialState}
     validationSchema={groupSchema}
@@ -28,7 +28,6 @@ const Group = ({ initialState, handleSubmit }) => (
           <Field name='name' type='text' placeholder='Group name' />
           {errors.name && touched.name ? <div>{errors.name}</div> : null}
         </div>
-
         <div className='form-group'>
           <Field
             type='text'
@@ -40,7 +39,6 @@ const Group = ({ initialState, handleSubmit }) => (
             <div>{errors.description}</div>
           ) : null}
         </div>
-
         <button type='submit' className='dashboard-button btn-primary'>
           Stwórz grupę
         </button>
@@ -49,4 +47,4 @@ const Group = ({ initialState, handleSubmit }) => (
   </Formik>
 );
 
-export default Group;
+export default GroupForm;
