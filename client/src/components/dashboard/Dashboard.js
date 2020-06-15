@@ -53,7 +53,9 @@ const Dashboard = ({
     'E-mail',
     ''
   ];
-
+  if (localStorage.getItem('groupId')) localStorage.removeItem('groupId');
+  if (localStorage.getItem('listening')) localStorage.removeItem('listening');
+  if (localStorage.getItem('groupName')) localStorage.removeItem('groupName');
   if (loading || (loading && dashboard === null)) {
     return (
       <div className='loader'>
@@ -111,12 +113,10 @@ const Dashboard = ({
         });
       });
     }
-    console.log(myTasks.myTask);
 
     const data = myTasks.myTask.map(el => {
       return el.filter(value => value !== undefined);
     });
-    console.log(data);
 
     if (user !== null && user.role === 'student') {
       data.forEach(el => {

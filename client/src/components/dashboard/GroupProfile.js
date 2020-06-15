@@ -19,6 +19,7 @@ import {
 import AddStudentForm from '../dashboard/AddStudentForm';
 import CreateTaskForm, { files } from '../dashboard/CreateTaskForm';
 import { createTask } from '../../actions/task';
+import { getMessages } from '../../actions/message';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,7 +34,8 @@ const GroupProfile = ({
   getGroupById,
   addStudent,
   deleteStudent,
-  createTask
+  createTask,
+  getMessages
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -52,8 +54,11 @@ const GroupProfile = ({
     'Nazwisko',
     ''
   ];
-  if (group && group !== undefined)
+  if (group && group !== undefined) {
     localStorage.setItem('groupId', group.data._id);
+    localStorage.setItem('groupName', group.data.name);
+  }
+
   console.log(localStorage.getItem('groupId'));
 
   useEffect(
@@ -235,7 +240,10 @@ const GroupProfile = ({
                   </h2>
                   <button
                     className='dashboard-button chat-btn'
-                    onClick={() => history.push('/chatRoom')}
+                    onClick={() => {
+                      getMessages(localStorage.getItem('groupId'));
+                      history.push('/chatRoom');
+                    }}
                   >
                     <span className='back-icon'>
                       <ChatIcon />
@@ -304,7 +312,8 @@ GroupProfile.propTypes = {
   addStudent: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   deleteStudent: PropTypes.func.isRequired,
-  createTask: PropTypes.func.isRequired
+  createTask: PropTypes.func.isRequired,
+  getMessages: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -313,5 +322,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getGroupById, addStudent, deleteStudent, createTask }
+  { getGroupById, addStudent, deleteStudent, createTask, getMessages }
 )(GroupProfile);
