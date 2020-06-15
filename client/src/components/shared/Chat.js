@@ -106,7 +106,7 @@ const Chat = ({
     <section className='container container-dashboard'>
       <header class='chat-header'>
         <h1>
-          <i class='fas fa-smile'></i> ChatCord
+          <i class='fas fa-smile'></i> Rozmowa grupowa
         </h1>
         <a
           class='btn'
