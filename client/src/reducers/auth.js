@@ -5,20 +5,29 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAIL,
-  LOGOUT
+  LOGOUT,
+  GET_DASHBOARD_FAIL,
+  GET_DASHBOARD_START,
+  GET_DASHBOARD_SUCCESS
 } from '../actions/types';
 
 const initialState = {
   token: localStorage.getItem('token'),
   isAuthenticated: null,
   loading: true,
-  user: null
+  user: null,
+  dashboard: null
 };
 
 export default function(state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
+    case GET_DASHBOARD_START:
+      return {
+        ...state,
+        loading: true
+      };
     case USER_LOADED:
       return {
         ...state,
@@ -44,6 +53,17 @@ export default function(state = initialState, action) {
         ...state,
         token: null,
         isAuthenticated: false,
+        loading: false
+      };
+    case GET_DASHBOARD_SUCCESS:
+      return {
+        ...state,
+        dashboard: payload,
+        loading: false
+      };
+    case GET_DASHBOARD_FAIL:
+      return {
+        ...state,
         loading: false
       };
     default:
