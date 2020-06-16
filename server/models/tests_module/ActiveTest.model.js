@@ -25,4 +25,4 @@ const ActiveTestSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.Model('ActiveTest', ActiveTestSchema);
+module.exports = mongoose.model('ActiveTest', ActiveTestSchema);
