@@ -21,6 +21,7 @@ export const createRate = ({ id, value, comment }) => async dispatch => {
       type: CREATE_RATE_SUCCESS,
       payload: res.data
     });
+    dispatch(setAlert('Wystawiono ocenę', 'success'));
   } catch (err) {
     dispatch({
       type: CREATE_RATE_FAIL

@@ -8,10 +8,7 @@ import { CircularProgress } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import {
-  TableOptions,
-  tableID
-} from '../../shared/consts/TableOption.constants';
+import { TableOptions } from '../../shared/consts/TableOption.constants';
 import { getRates } from '../../actions/rate';
 
 const useStyles = makeStyles(theme => ({
@@ -58,8 +55,6 @@ const RateProfile = ({
     'E-mail studenta',
     ''
   ];
-
-  console.log(rates);
 
   if (loading || (loading && rates === [])) {
     return (
