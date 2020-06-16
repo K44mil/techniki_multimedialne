@@ -31,9 +31,11 @@ const ExamProfile = ({ createTest }) => {
   };
   const allQuestions = {
     name: 'Test',
-    description: 'lolol'
+    description: 'lolol',
+    questions: []
   };
-  allQuestions.questions = testQuestions;
+
+  // allQuestions.questions = [testQuestions];
 
   //only component with forms
   const [questions, setQuestion] = useState([]);
@@ -84,6 +86,13 @@ const ExamProfile = ({ createTest }) => {
         </Grid>
         <button
           onClick={() => {
+            for (const props in testQuestions) {
+              let obj = {};
+              obj = testQuestions[props];
+              allQuestions.questions.push(obj);
+            }
+            // console.log(allQuestions);
+
             createTest(allQuestions);
           }}
           type='submit'
@@ -98,7 +107,10 @@ ExamProfile.propTypes = {
   createTest: PropTypes.func.isRequired
 };
 
-// const mapStateToProps = state => ({
-//   auth: state.auth
-// });
-export default connect({ createTest })(ExamProfile);
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+export default connect(
+  mapStateToProps,
+  { createTest }
+)(ExamProfile);

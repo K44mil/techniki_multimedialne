@@ -10,13 +10,13 @@ import { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
 
 export const createTest = test => async dispatch => {
-  const body = JSON.stringify(test);
+  //   const body = JSON.stringify(test);
   dispatch({
     type: CREATE_TEST_START
   });
 
   try {
-    const res = await client.post(`/api/v1/tests`, body);
+    const res = await client.post(`/api/v1/tests/`, test);
     dispatch({
       type: CREATE_TEST_SUCCESS,
       payload: res.data

@@ -22,7 +22,10 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
   });
 
   const handleChange = event => {
+    console.log(event.target.checked);
     setState({ ...state, [event.target.name]: event.target.checked });
+    console.log(event.target.checked);
+    console.log(state);
   };
 
   const [formData, setFormData] = useState({
@@ -44,15 +47,21 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
       return (
         <>
           <div className='form-group' onChange={getAnswers}>
-            <Field name='answerD' type='text' placeholder='Odpowiedź D' />
+            <Field
+              name='answerD'
+              type='text'
+              placeholder='Odpowiedź D'
+              value=''
+            />
           </div>
           <FormControlLabel
             control={
               <Checkbox
                 checked={state.checkedD}
-                onChange={handleChange}
+                // onChange={() => setState(!state.checkedD)}
                 name='checkedD'
                 color='primary'
+                value=''
               />
             }
             label='Poprawna'
@@ -63,15 +72,21 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
       return (
         <>
           <div className='form-group' onChange={getAnswers}>
-            <Field name='answerE' type='text' placeholder='Odpowiedź E' />
+            <Field
+              name='answerE'
+              type='text'
+              placeholder='Odpowiedź E'
+              value=''
+            />
           </div>
           <FormControlLabel
             control={
               <Checkbox
                 checked={state.checkedE}
-                onChange={handleChange}
+                onChange={() => console.log('lolo')}
                 name='checkedE'
                 color='primary'
+                value=''
               />
             }
             label='Poprawna'
