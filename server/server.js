@@ -25,6 +25,7 @@ const notificationsRoutes = require('./routes/notifications.routes');
 const filesRoutes = require('./routes/files.routes');
 const ratesRoutes = require('./routes/rates.routes');
 const messagesRoutes = require('./routes/chatmessages.routes');
+const testsRoutes = require('./routes/tests.routes');
 
 const app = express();
 const httpServer = http.Server(app);
@@ -88,6 +89,7 @@ app.use('/api/v1/notifications', notificationsRoutes);
 app.use('/api/v1/files', filesRoutes);
 app.use('/api/v1/rates', ratesRoutes);
 app.use('/api/v1/messages', messagesRoutes);
+app.use('/api/v1/tests', testsRoutes);
 
 // Set error handler
 app.use(errorHandler);
