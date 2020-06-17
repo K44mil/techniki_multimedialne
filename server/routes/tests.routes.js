@@ -19,7 +19,7 @@ router
 
 router
   .route('/:testId/group/:groupId')
-  .post(protect, authorize('teacher', 'admin', activateTest));
+  .post(protect, authorize('teacher', 'admin'), activateTest);
 
 router.route('/finishedTests').get(protect, getFinishedTests);
 
