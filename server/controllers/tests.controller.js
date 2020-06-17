@@ -77,7 +77,7 @@ exports.activateTest = asyncHandler(async (req, res, next) => {
         );
     }
     // Create ActiveTest
-    let activeTest = await ActiveTest({
+    let activeTest = await ActiveTest.create({
         testId: test.id,
         groupId: group.id,
         availableAt: availableAt,
