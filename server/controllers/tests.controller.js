@@ -166,7 +166,7 @@ exports.getActiveTests = asyncHandler(async (req, res, next) => {
             });
             if (activeTests) {
                 for (const aT of activeTests) {
-                    if (aT.availableUntil > new Date() && aT.availableAt < new Date()) {
+                    if (aT.availableUntil > new Date()) {
                         data.push(aT);
                     }
                 }
