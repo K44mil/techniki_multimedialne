@@ -222,3 +222,26 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
         data: finishedTests
     });
 });
+
+// @desc    Get test by id (for teacher)
+// @route   GET /api/v1/tests/:id
+// @access  Private
+exports.getTest = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const test = await Test.findById(req.params.id);
+    if (!test) {
+        return next(
+            new ErrorResponse(`Test with id ${req.params.id} does not exist.`, 400)
+        );
+    }
+    if (user.id.toString() !== test.createdBy.toString()) {
+        return next(
+            new ErrorResponse(`Not authorized.`, 401)
+        );
+    }
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: test
+    });
+});
