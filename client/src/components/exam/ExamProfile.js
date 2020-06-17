@@ -25,7 +25,9 @@ const ExamProfile = ({ createTest }) => {
       text: '',
       answerA: '',
       answerB: '',
-      answerC: ''
+      answerC: '',
+      answerD: '',
+      answerE: ''
     },
     setRef: createForm
   };

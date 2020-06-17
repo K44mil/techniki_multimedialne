@@ -3,7 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
+import { FormGroup } from '@material-ui/core';
 const testQuestionSchema = Yup.object().shape({
   text: Yup.string().required('Podaj treść'),
   answerA: Yup.string().required('Podaj odpowiedź'),
@@ -16,9 +16,9 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
   const [state, setState] = React.useState({
     checkedA: false,
     checkedB: false,
-    checkedC: false,
-    checkedD: false,
-    checkedE: false
+    checkedC: false
+    // checkedD: false,
+    // checkedE: false
   });
 
   const handleChange = event => {
@@ -43,57 +43,64 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
   const [formNumber, setNumber] = useState(1);
 
   const MyForm = number => {
+    const [state2, setState2] = React.useState({
+      // checkedA: false,
+      // checkedB: false,
+      // checkedC: false
+      checkedD: false,
+      checkedE: false
+    });
+    const handleChange2 = event => {
+      setState2({ ...state2, [event.target.name]: event.target.checked });
+      setState(...state, ...state2);
+      console.log(state);
+    };
+
     if (number.number === 1) {
       return (
         <>
           <div className='form-group' onChange={getAnswers}>
-            <Field
-              name='answerD'
-              type='text'
-              placeholder='Odpowiedź D'
-              value=''
-            />
+            <Field name='answerD' type='text' placeholder='Odpowiedź D' />
           </div>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={state.checkedD}
-                // onChange={() => setState(!state.checkedD)}
-                name='checkedD'
-                color='primary'
-                value=''
-              />
-            }
-            label='Poprawna'
-          />
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state2.checkedD}
+                  onChange={handleChange2}
+                  name='checkedD'
+                  color='primary'
+                  value='checkedD'
+                />
+              }
+              label='Poprawna'
+            />
+          </FormGroup>
         </>
       );
     } else if (number.number === 2) {
       return (
         <>
           <div className='form-group' onChange={getAnswers}>
-            <Field
-              name='answerE'
-              type='text'
-              placeholder='Odpowiedź E'
-              value=''
-            />
+            <Field name='answerE' type='text' placeholder='Odpowiedź E' />
           </div>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={state.checkedE}
-                onChange={() => console.log('lolo')}
-                name='checkedE'
-                color='primary'
-                value=''
-              />
-            }
-            label='Poprawna'
-          />
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state2.checkedE}
+                  onChange={handleChange2}
+                  name='checkedE'
+                  color='primary'
+                  value='checkedE'
+                />
+              }
+              label='Poprawna'
+            />
+          </FormGroup>
         </>
       );
-    } else return null;
+    }
   };
   const [forms, setForm] = useState([]);
   const addForm = () => {
@@ -124,7 +131,7 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
   questionParams[number.toString()] = formData;
 
   return (
-    <Formik initialValues={initialState} validationSchema={testQuestionSchema}>
+    <Formik initialValues={initialState}>
       {({ errors, touched }) => (
         <Form className='form'>
           <p>Pytanie {number}</p>
@@ -135,11 +142,11 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
               name='text'
               placeholder='Treść zadania'
             />
-            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+            {/* {errors.value && touched.value ? <div>{errors.value}</div> : null} */}
           </div>
           <div className='form-group' onChange={getAnswers}>
             <Field name='answerA' type='text' placeholder='Odpowiedź A' />
-            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+            {/* {errors.value && touched.value ? <div>{errors.value}</div> : null} */}
           </div>
           <FormControlLabel
             control={
@@ -147,6 +154,7 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
                 checked={state.checkedA}
                 onChange={handleChange}
                 name='checkedA'
+                value='checkedA'
                 color='primary'
               />
             }
@@ -154,7 +162,7 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
           />
           <div className='form-group' onChange={getAnswers}>
             <Field name='answerB' type='text' placeholder='Odpowiedź B' />
-            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+            {/* {errors.value && touched.value ? <div>{errors.value}</div> : null} */}
           </div>
           <FormControlLabel
             control={
@@ -162,6 +170,7 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
                 checked={state.checkedB}
                 onChange={handleChange}
                 name='checkedB'
+                value='checkedB'
                 color='primary'
               />
             }
@@ -169,7 +178,7 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
           />
           <div className='form-group' onChange={getAnswers}>
             <Field name='answerC' type='text' placeholder='Odpowiedź C' />
-            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+            {/* {errors.value && touched.value ? <div>{errors.value}</div> : null} */}
           </div>
           <FormControlLabel
             control={
@@ -177,11 +186,29 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
                 checked={state.checkedC}
                 onChange={handleChange}
                 name='checkedC'
+                value='checkedC'
                 color='primary'
               />
             }
             label='Poprawna'
           />
+          {/* <div className='form-group' onChange={getAnswers}>
+            <Field name='answerD' type='text' placeholder='Odpowiedź D' />
+          </div>
+          <FormGroup row>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={state.checkedD}
+                  onChange={handleChange}
+                  name='checkedD'
+                  color='primary'
+                  value='checkedD'
+                />
+              }
+              label='Poprawna'
+            />
+          </FormGroup> */}
           {forms.map(e => (
             <>{e}</>
           ))}
