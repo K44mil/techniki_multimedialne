@@ -9,7 +9,12 @@ import Moment from 'react-moment';
 
 import Menu from '../shared/Menu';
 import PropTypes from 'prop-types';
-import { getTests, getFinishedTests } from '../../actions/test';
+import {
+  getTests,
+  getFinishedTests,
+  getActiveTests,
+  getTestById
+} from '../../actions/test';
 import {
   tableID,
   TableOptions
@@ -56,19 +61,20 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
   }
 
   if (tests) {
-    //     const tableButton = (
-    //       <button
-    //         className='dashboard-button'
-    //         onClick={() => {
-    //           setTimeout(() => {
-    //             getGroupById(tableID.ID);
-    //             history.push('/groupProfile');
-    //           }, 100);
-    //         }}
-    //       >
-    //         Pokaż
-    //       </button>
-    //     );
+    const tableButton = (
+      <button
+        className='dashboard-button'
+        onClick={() => {
+          setTimeout(() => {
+            dispatch(getTestById(tableID.ID));
+            // dispatch(getGroups());
+            history.push('/examProfile');
+          }, 100);
+        }}
+      >
+        Pokaż
+      </button>
+    );
 
     //     const deleteGroupButton = (
     //       <button
@@ -107,15 +113,12 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     });
     console.log(data);
 
-    //   const data2 = data.map(el => {
-    //     if (user !== null && user.role === 'student') {
-    //       el.push(tableButton);
-    //     } else {
-    //       el.push(tableButton, deleteGroupButton);
-    //     }
-
-    //     return el;
-    //   });
+    const data2 = data.map(el => {
+      if (user !== null && user.role === 'teacher') {
+        el.push(tableButton);
+      }
+      return el;
+    });
 
     return (
       <section className='container container-dashboard'>
@@ -125,18 +128,17 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
             <Grid item xs={12}>
               <h1 className='large large-test text-primary'>Twoje testy</h1>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <button
                 className='btn-primary dashboard-button'
                 onClick={() => {
-                  // setNumber(questionNumber + 1);
-                  // addOpenQuestion();
+                  dispatch(getActiveTests());
                 }}
               >
                 Aktywne testy
               </button>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <button
                 className='btn-orange dashboard-button'
                 onClick={() => {
@@ -146,10 +148,20 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
                 Skończone testy
               </button>
             </Grid>
+            <Grid item xs={12} sm={4}>
+              <button
+                className='btn-success dashboard-button'
+                onClick={() => {
+                  dispatch(getTests());
+                }}
+              >
+                Wszystkie testy
+              </button>
+            </Grid>
             <Grid item xs>
               <MUIDataTable
                 title='Twoje testy'
-                data={data}
+                data={data2}
                 columns={columns}
                 options={TableOptions}
               />

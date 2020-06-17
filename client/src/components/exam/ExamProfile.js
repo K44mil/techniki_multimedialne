@@ -1,162 +1,266 @@
-import React, { useState, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
-
+import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import TestQuestionForm from './TestQuestionForm';
-import OpenQuestionForm from './OpenQuestionForm';
-import { createTest } from '../../actions/test';
-// import { questionParams } from './TestQuestionForm';
+import { Redirect, useHistory } from 'react-router-dom';
+import { connect, useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { getGroups } from '../../actions/group';
+import { getTestById, activateTest } from '../../actions/test';
+import MUIDataTable from 'mui-datatables';
+import { CircularProgress } from '@material-ui/core';
+import { Modal } from '../shared/Modal';
+import ActivateTestForm from './ActivateTestForm';
+import {
+  tableID,
+  TableOptions
+} from '../../shared/consts/TableOption.constants';
+
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     margin: 10
   }
 }));
-//all data stuf
-let testQuestions = {};
-const ExamProfile = ({ createTest }) => {
+export const groupId = {};
+const ExamProfile = ({
+  test: { test, loading },
+  group: { groups },
+  auth: { user },
+  getTestById,
+  getGroups
+}) => {
+  const classes = useStyles();
+  const dispatch = useDispatch();
   const history = useHistory();
   const createForm = useRef(null);
-  const classes = useStyles();
-  const [questionNumber, setNumber] = useState(1);
-  // const testQuestions = {};
-  const questionCreateProps = {
-    initialState: {
-      text: '',
-      answerA: '',
-      answerB: '',
-      answerC: '',
-      answerD: '',
-      answerE: ''
+
+  const columns = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
     },
-    setRef: createForm
+    {
+      name: 'Nazwa grupy'
+    },
+    'Opis',
+    ''
+  ];
+  if (test && test !== undefined) {
+    localStorage.setItem('testId', test._id);
+  }
+  const [createOpen, setCreateOpen] = useState(false);
+  const handleCreateModal = () => {
+    setCreateOpen(!createOpen);
+  };
+  const handleCreate = (values, actions) => {
+    const data = {
+      availableAt: values.availableAt,
+      availableUntil: values.availableUntil,
+      groupId: tableID.ID,
+      testId: test._id
+    };
+    dispatch(activateTest(data));
+    actions.resetForm({});
+    setCreateOpen(!createOpen);
   };
 
-  //for title and description
-  const [titleData, setTitleData] = useState({
-    title: '',
-    description: ''
-  });
-  const getTitle = e => {
-    setTitleData({ ...titleData, [e.target.name]: e.target.value });
+  const addCreateProps = {
+    initialState: {
+      availableAt: '',
+      availableUntil: ''
+    },
+    setRef: createForm,
+    handleSubmit: (values, actions) => {
+      handleCreate(values, actions);
+    }
   };
+  useEffect(() => {
+    dispatch(() => getGroups());
+  }, [dispatch]);
 
-  const allQuestions = {
-    name: titleData.title,
-    description: titleData.description,
-    questions: []
-  };
-  const [isDisable, setDisabled] = useState(true);
+  useEffect(() => {
+    if (loading) {
+      getTestById(localStorage.getItem('testId'));
+    }
+  }, [loading]);
 
-  //only component with forms
-  const [questions, setQuestion] = useState([]);
-  const addQuestion = () => {
-    setDisabled(false);
-    setQuestion(prev => [
-      ...prev,
-      <TestQuestionForm
-        {...questionCreateProps}
-        number={questionNumber}
-        questionParams={testQuestions}
-      />
-    ]);
-  };
-  const [openQuestions, setOpenQuestion] = useState([]);
-  const addOpenQuestion = () => {
-    setDisabled(false);
-    setOpenQuestion(prev => [
-      ...prev,
-      <OpenQuestionForm
-        {...questionCreateProps}
-        number={questionNumber}
-        questionParams={testQuestions}
-      />
-    ]);
-  };
-
-  return (
-    <section className='container container-dashboard'>
-      <div className={classes.root}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={12}>
-            <div className='form-group'>
-              <form className='form' onChange={getTitle}>
-                <h2 className='text-primary'>Nazwa testu</h2>
-                <input type='text' name='title' required placeholder='Tytuł' />
-                <h2 className='text-primary'>Opis</h2>
-                <textarea
-                  type='placeholder'
-                  name='description'
-                  placeholder='Opis'
-                />
-              </form>
-            </div>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <button
-              className='btn-primary dashboard-button'
-              onClick={() => {
-                setNumber(questionNumber + 1);
-                addOpenQuestion();
-              }}
-            >
-              Stwórz pytanie otwarte
-            </button>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <button
-              className='btn-orange dashboard-button'
-              onClick={() => {
-                addQuestion();
-                setNumber(questionNumber + 1);
-              }}
-            >
-              Stwórz pytanie zamknięte
-            </button>
-          </Grid>
-          <Grid item xs>
-            <div className='container-profile'>
-              {questions.map(e => (
-                <>{e}</>
-              ))}
-              {openQuestions.map(e => (
-                <>{e}</>
-              ))}
-            </div>
-          </Grid>
-        </Grid>
-        <button
-          disabled={isDisable}
-          className='dashboard-button btn-dark'
-          onClick={() => {
-            for (const props in testQuestions) {
-              let obj = {};
-              obj = testQuestions[props];
-              allQuestions.questions.push(obj);
-            }
-            createTest(allQuestions);
-            history.push('/dashboard');
-          }}
-          type='submit'
-        >
-          Stwórz test
-        </button>
-      </div>
-    </section>
+  const tableButton = (
+    <button className='dashboard-button task-btn' onClick={handleCreateModal}>
+      Aktywuj test
+    </button>
   );
+  if (loading) {
+    return (
+      <div className='loader'>
+        <CircularProgress />
+      </div>
+    );
+  }
+  if (groups.data !== undefined && test !== null) {
+    const myGroups = groups.data.map(el => {
+      return Object.keys(el).map(key => {
+        if (key === 'name' || key === 'description' || key === '_id') {
+          return el[key];
+        }
+      });
+    });
+
+    const data = myGroups.map(el => {
+      return el.filter(value => value !== undefined);
+    });
+    const data2 = data.map(el => {
+      if (user !== null && user.role === 'teacher') {
+        el.push(tableButton);
+      }
+      return el;
+    });
+    return (
+      <>
+        <Modal
+          open={createOpen}
+          onClose={handleCreateModal}
+          onClickSubmit={handleCreateModal}
+          title='Aktywuj test'
+          dialogContent={<ActivateTestForm {...addCreateProps} />}
+          maxWidth='sm'
+          labelPrimary='Zakończ'
+          dividers
+          fullWidth
+        />
+        <section className='container container-dashboard'>
+          <div className={classes.root}>
+            <Grid container spacing={5}>
+              <Grid item xs>
+                <button
+                  className='dashboard-button profile-btn'
+                  onClick={() => {
+                    localStorage.removeItem('testId');
+                    history.push('/tests');
+                  }}
+                >
+                  <span className='back-icon'>
+                    <ArrowBackIcon />
+                  </span>{' '}
+                  Test
+                </button>
+                <div className='bg-light'>
+                  <div className='container-profile'>
+                    <h2 className='text-primary'>
+                      {test !== null ? test.name : ''}
+                    </h2>
+                    {test !== null && test.description !== '' ? (
+                      <>
+                        <h3 className='text-dark'>Opis</h3>
+                        <p>{test.description}</p>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {test !== null && test.createdAt !== '' ? (
+                      <>
+                        <h3 className='text-dark'>Data stworzenia</h3>
+                        <p>{new Date(test.createdAt).toLocaleString()}</p>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                </div>
+
+                <h2 className='text-primary'>Twoje grupy</h2>
+                {groups !== null ? (
+                  <MUIDataTable
+                    options={TableOptions}
+                    title='Twoje grupy'
+                    columns={columns}
+                    data={data2}
+                  />
+                ) : (
+                  <MUIDataTable
+                    title='Twoje grupy'
+                    columns={columns}
+                    options={TableOptions}
+                  />
+                )}
+              </Grid>
+            </Grid>
+          </div>
+        </section>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <section className='container container-dashboard'>
+          <div className={classes.root}>
+            <Grid container spacing={5}>
+              <Grid item xs>
+                <button
+                  className='dashboard-button profile-btn'
+                  onClick={() => history.push('/tests')}
+                >
+                  <span className='back-icon'>
+                    <ArrowBackIcon />
+                  </span>{' '}
+                  Test
+                </button>
+                <div className='bg-light'>
+                  <div className='container-profile'>
+                    <h2 className='text-primary'>
+                      {test !== null ? test.name : ''}
+                    </h2>
+                    {test !== null && test.description !== '' ? (
+                      <>
+                        <h3 className='text-dark'>Opis</h3>
+                        <p>{test.description}</p>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                    {test !== null && test.createdAt !== '' ? (
+                      <>
+                        <h3 className='text-dark'>Data stworzenia</h3>
+                        <p>${new Date(test.createdAt).toLocaleString()}</p>
+                      </>
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                </div>
+
+                <h2 className='text-primary'>Twoje grupy</h2>
+                <MUIDataTable
+                  title='Twoje grupy'
+                  columns={columns}
+                  options={TableOptions}
+                />
+              </Grid>
+            </Grid>
+          </div>
+        </section>
+      </>
+    );
+  }
 };
+
 ExamProfile.propTypes = {
-  createTest: PropTypes.func.isRequired
+  group: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  test: PropTypes.object.isRequired,
+  getTestById: PropTypes.func.isRequired,
+  getGroups: PropTypes.func.isRequired,
+  activateTest: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  group: state.group,
+  auth: state.auth,
+  test: state.test
 });
 export default connect(
   mapStateToProps,
-  { createTest }
+  { getGroups, getTestById, activateTest }
 )(ExamProfile);

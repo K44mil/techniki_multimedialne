@@ -167,6 +167,11 @@ img {
   color: #fff;
 }
 
+.btn-yellow {
+  background: var(--yellow-color);
+  color: #fff;
+}
+
 .round-img {
   border-radius: 50%;
 }
