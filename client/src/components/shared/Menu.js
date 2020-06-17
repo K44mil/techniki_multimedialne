@@ -120,7 +120,11 @@ const Menu = ({
 
   const studentButtonTests = (
     <Grid item xs={12} sm={12}>
-      <button className='dashboard-button' type='submit'>
+      <button
+        className='dashboard-button'
+        type='submit'
+        onClick={() => history.push('/tests')}
+      >
         Twoje testy
       </button>
     </Grid>
@@ -138,7 +142,11 @@ const Menu = ({
         </button>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <button className='dashboard-button' type='submit'>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/tests')}
+        >
           Twoje testy
         </button>
       </Grid>

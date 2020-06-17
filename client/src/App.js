@@ -21,6 +21,8 @@ import TaskProfile from './components/dashboard/TaskProfile';
 import RateProfile from './components/dashboard/RateProfile';
 import Chat from './components/shared/Chat';
 import ExamProfile from './components/exam/ExamProfile';
+import Tests from './components/exam/Tests';
+
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -53,6 +55,7 @@ const App = () => {
             <PrivateRoute exact path='/rateProfile' component={RateProfile} />
             <PrivateRoute exact path='/chatRoom' component={Chat} />
             <PrivateRoute exact path='/examProfile' component={ExamProfile} />
+            <PrivateRoute exact path='/tests' component={Tests} />
           </Switch>
         </Provider>
       </Fragment>

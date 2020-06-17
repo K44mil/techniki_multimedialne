@@ -69,6 +69,10 @@ img {
   margin-bottom: 1rem;
 }
 
+.large-test {
+  margin-bottom: -1rem;
+}
+
 .lead {
   font-size: 1.5rem;
   margin-bottom: 1rem;
@@ -326,6 +330,11 @@ button {
   /* Safari */
   transition-duration: 0.4s;
   filter: brightness(85%);
+}
+
+.dashboard-button:disabled {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 a:hover {
