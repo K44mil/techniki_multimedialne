@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 }));
 //1-all tests 2-active tests 3-finished tests
 let testFlag = 1;
+let testFlagStudent = 2;
 const Tests = ({ test: { tests, loading }, auth: { user } }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -66,9 +67,24 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     ''
   ];
 
+  const columnsStudent = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
+    },
+    {
+      name: 'Status Testu'
+    },
+    'Rezultat',
+    'Nazwa testy',
+    'Nazwa grupy'
+  ];
+
   useEffect(() => {
     if (user && user.role === 'teacher') dispatch(getTests());
-    else dispatch(getAllStudentTests());
+    else if (user && user.role === 'student') dispatch(getAllStudentTests());
   }, [dispatch]);
 
   //   console.log(tests);
@@ -107,30 +123,54 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     }
     const myTests = tests.map(el => {
       return Object.keys(el).map(key => {
-        if (testFlag === 1) {
-          if (
-            key === 'name' ||
-            key === 'description' ||
-            key === '_id' ||
-            key === 'createdAt'
-          )
-            return el[key];
-        } else if (testFlag === 2) {
-          if (
-            key === 'groupName' ||
-            key === 'testName' ||
-            key === '_id' ||
-            key === 'numberOfCompleted' ||
-            key === 'numberOfParticipants'
-          )
-            return el[key];
+        if (user && user.role === 'teacher') {
+          if (testFlag === 1 || testFlagStudent === 1) {
+            if (
+              key === 'name' ||
+              key === 'description' ||
+              key === '_id' ||
+              key === 'createdAt'
+            )
+              return el[key];
+          } else if (testFlag === 2 || testFlagStudent === 2) {
+            if (
+              key === 'groupName' ||
+              key === 'testName' ||
+              key === '_id' ||
+              key === 'numberOfCompleted' ||
+              key === 'numberOfParticipants'
+            )
+              return el[key];
+          }
+        } else if (user && user.role === 'student') {
+          if (testFlagStudent === 1) {
+            if (
+              key === 'name' ||
+              key === 'description' ||
+              key === '_id' ||
+              key === 'createdAt'
+            )
+              return el[key];
+          } else if (testFlagStudent === 2) {
+            if (
+              key === 'groupName' ||
+              key === 'testName' ||
+              key === '_id' ||
+              key === 'status' ||
+              key === 'result'
+            )
+              return el[key];
+          }
         }
       });
     });
     const data = myTests.map(el => {
       return el.filter(value => value !== undefined);
     });
-    if (testFlag === 1) {
+    if (
+      (user.role === 'teacher' && testFlag === 1) ||
+      (user.role === 'student' && testFlagStudent === 1)
+    ) {
       data.forEach(el => {
         el[el.length - 1] = (
           <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
@@ -198,7 +238,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
                   <button
                     className='btn-orange dashboard-button'
                     onClick={() => {
-                      testFlag = 3;
+                      testFlagStudent = 3;
                       dispatch(getStudentFinishedTests());
                     }}
                   >
@@ -209,8 +249,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
                   <button
                     className='btn-success dashboard-button'
                     onClick={() => {
-                      testFlag = 1;
-
+                      testFlagStudent = 2;
                       dispatch(getAllStudentTests());
                     }}
                   >
@@ -224,12 +263,14 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               {}
               <MUIDataTable
                 title='Twoje testy'
-                data={data2}
+                data={user && user.role === 'teacher' ? data2 : data}
                 columns={
-                  testFlag === 1
+                  testFlag === 1 && user && user.role === 'teacher'
                     ? columns
-                    : testFlag === 2
+                    : testFlag === 2 && user && user.role === 'teacher'
                     ? columnsActive
+                    : testFlagStudent === 2 && user && user.role === 'student'
+                    ? columnsStudent
                     : columns
                 }
                 options={TableOptions}

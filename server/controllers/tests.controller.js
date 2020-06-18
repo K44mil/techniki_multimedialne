@@ -195,14 +195,14 @@ exports.getActiveTests = asyncHandler(async (req, res, next) => {
 exports.getTestDetails = asyncHandler(async (req, res, next) => {
   const user = req.user;
   const activeTest = await ActiveTest.findById(req.params.id);
-  const test = await Test.findById(activeTest.testId);
-  const group = await Group.findById(activeTest.groupId);
-
   if (!activeTest) {
     return next(
       new ErrorResponse(`Test with id ${req.params.id} does not exist.`, 400)
     );
   }
+  const test = await Test.findById(activeTest.testId);
+  const group = await Group.findById(activeTest.groupId);
+
   const details = await UserTest.find({
     activeTestId: activeTest.id
   }).lean();
@@ -224,14 +224,14 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
   const user = req.user;
   const userTests = await UserTest.find({
     userId: user.id
-  });
+  }).lean();
   let finishedTests = [];
   for (const uT of userTests) {
     const activeTest = await ActiveTest.findById(uT.activeTestId);
-    const test = await Test.findById(activeTest.testId);
-    const group = await Group.findById(activeTest.groupId);
 
     if (activeTest && activeTest.availableUntil < new Date()) {
+      const test = await Test.findById(activeTest.testId);
+      const group = await Group.findById(activeTest.groupId);
       let obj = uT;
       obj.testName = test.name;
       obj.groupName = group.name;
@@ -252,14 +252,14 @@ exports.getMyActiveTests = asyncHandler(async (req, res, next) => {
   const user = req.user;
   const userTests = await UserTest.find({
     userId: user.id
-  });
+  }).lean();
   let activeTests = [];
   for (const uT of userTests) {
-    const activeTest = await ActiveTest.findById(uT.activeTestId);
-    const test = await Test.findById(activeTest.testId);
-    const group = await Group.findById(activeTest.groupId);
+    const activeTest = await ActiveTest.findById(uT.activeTestId).lean();
 
     if (activeTest && activeTest.availableUntil > new Date()) {
+      const test = await Test.findById(activeTest.testId);
+      const group = await Group.findById(activeTest.groupId);
       let obj = uT;
       obj.testName = test.name;
       obj.groupName = group.name;
