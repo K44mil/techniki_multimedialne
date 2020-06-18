@@ -166,6 +166,7 @@ exports.getActiveTests = asyncHandler(async (req, res, next) => {
             }).lean();
             if (activeTests) {
                 for (const aT of activeTests) {
+                    const test = await Test.findById(aT.testId);
                     const group = await Group.findById(aT.groupId);
                     if (aT.availableUntil > new Date()) {
                         let aT2 = aT;
