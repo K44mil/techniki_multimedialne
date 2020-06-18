@@ -190,6 +190,9 @@ exports.getActiveTests = asyncHandler(async (req, res, next) => {
 exports.getTestDetails = asyncHandler(async (req, res, next) => {
     const user = req.user;
     const activeTest = await ActiveTest.findById(req.params.id);
+    const test = await Test.findById(activeTest.testId);
+    const group = await Group.findById(activeTest.groupId);
+
     if (!activeTest) {
         return next(
             new ErrorResponse(`Test with id ${req.params.id} does not exist.`, 400)
@@ -197,11 +200,15 @@ exports.getTestDetails = asyncHandler(async (req, res, next) => {
     }
     const details = await UserTest.find({
         activeTestId: activeTest.id
-    });
+    }).lean();
     // Send response
     res.status(200).json({
         success: true,
-        data: details
+        data: {
+            details,
+            testName: test.name,
+            groupName: group.name
+        }
     });
 });
 
@@ -216,14 +223,48 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
     let finishedTests = [];
     for (const uT of userTests) {
         const activeTest = await ActiveTest.findById(uT.activeTestId);
+        const test = await Test.findById(activeTest.testId);
+        const group = await Group.findById(activeTest.groupId);
+
         if (activeTest && activeTest.availableUntil < new Date()) {
-            finishedTests.push(uT);
+            let obj = uT;
+            obj.testName = test.name;
+            obj.groupName = group.name;
+            finishedTests.push(obj);
         }
     }
     // Send response
     res.status(200).json({
         success: true,
         data: finishedTests
+    });
+});
+
+// @desc    Get all tests (for student)
+// @route   GET /api/v1/tests/myActiveTests
+// @access  Private
+exports.getMyActiveTests = asyncHandler(async (req, res, next) => {
+    const user = req.user;
+    const userTests = await UserTest.find({
+        userId: user.id
+    });
+    let activeTests = [];
+    for (const uT of userTests) {
+        const activeTest = await ActiveTest.findById(uT.activeTestId);
+        const test = await Test.findById(activeTest.testId);
+        const group = await Group.findById(activeTest.groupId);
+
+        if (activeTest && activeTest.availableUntil > new Date()) {
+            let obj = uT;
+            obj.testName = test.name;
+            obj.groupName = group.name;
+            activeTests.push(obj);
+        }
+    }
+    // Send response
+    res.status(200).json({
+        success: true,
+        data: activeTests
     });
 });
 
