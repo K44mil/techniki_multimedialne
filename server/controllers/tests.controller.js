@@ -174,13 +174,14 @@ exports.getActiveTests = asyncHandler(async (req, res, next) => {
           if (aT.availableUntil > new Date()) {
             let aT2 = aT;
             aT2.groupName = group.name;
-            aT2.testName = test.name;
+            aT2.testName = t.name;
             data.push(aT2);
           }
         }
       }
     }
   }
+
   // Send response
   res.status(200).json({
     success: true,

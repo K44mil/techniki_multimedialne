@@ -14,7 +14,9 @@ import {
   getFinishedTests,
   getActiveTests,
   getTestById,
-  getParticipantsDetails
+  getParticipantsDetails,
+  getAllStudentTests,
+  getStudentFinishedTests
 } from '../../actions/test';
 import {
   tableID,
@@ -56,16 +58,17 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
       }
     },
     {
-      name: 'Nazwa testu'
+      name: 'Liczba skończonych testów'
     },
-    'Nazwa grupy',
-    'Liczba skończonych testów',
     'Liczba uczestników',
+    'Nazwa grupy',
+    'Nazwa testu',
     ''
   ];
 
   useEffect(() => {
-    dispatch(getTests());
+    if (user && user.role === 'teacher') dispatch(getTests());
+    else dispatch(getAllStudentTests());
   }, [dispatch]);
 
   //   console.log(tests);
@@ -113,8 +116,6 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
           )
             return el[key];
         } else if (testFlag === 2) {
-          console.log('hejo');
-
           if (
             key === 'groupName' ||
             key === 'testName' ||
@@ -126,8 +127,6 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
         }
       });
     });
-    console.log(testFlag);
-
     const data = myTests.map(el => {
       return el.filter(value => value !== undefined);
     });
@@ -156,39 +155,71 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
             <Grid item xs={12}>
               <h1 className='large large-test text-primary'>Twoje testy</h1>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <button
-                className='btn-primary dashboard-button'
-                onClick={() => {
-                  testFlag = 2;
-                  dispatch(getActiveTests());
-                }}
-              >
-                Aktywne testy
-              </button>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <button
-                className='btn-orange dashboard-button'
-                onClick={() => {
-                  testFlag = 3;
-                  dispatch(getFinishedTests());
-                }}
-              >
-                Skończone testy
-              </button>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <button
-                className='btn-success dashboard-button'
-                onClick={() => {
-                  testFlag = 1;
-                  dispatch(getTests());
-                }}
-              >
-                Wszystkie testy
-              </button>
-            </Grid>
+            {user && user.role === 'teacher' ? (
+              <>
+                <Grid item xs={12} sm={4}>
+                  <button
+                    className='btn-primary dashboard-button'
+                    onClick={() => {
+                      testFlag = 2;
+                      dispatch(getActiveTests());
+                    }}
+                  >
+                    Aktywne testy
+                  </button>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <button
+                    className='btn-orange dashboard-button'
+                    onClick={() => {
+                      testFlag = 3;
+                      dispatch(getFinishedTests());
+                    }}
+                  >
+                    Skończone testy
+                  </button>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <button
+                    className='btn-success dashboard-button'
+                    onClick={() => {
+                      testFlag = 1;
+
+                      dispatch(getTests());
+                    }}
+                  >
+                    Wszystkie testy
+                  </button>
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <button
+                    className='btn-orange dashboard-button'
+                    onClick={() => {
+                      testFlag = 3;
+                      dispatch(getStudentFinishedTests());
+                    }}
+                  >
+                    Skończone testy
+                  </button>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <button
+                    className='btn-success dashboard-button'
+                    onClick={() => {
+                      testFlag = 1;
+
+                      dispatch(getAllStudentTests());
+                    }}
+                  >
+                    Wszystkie testy
+                  </button>
+                </Grid>
+              </>
+            )}
+
             <Grid item xs>
               {}
               <MUIDataTable
@@ -232,15 +263,10 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
 Tests.propTypes = {
   test: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired
-  //   getTestById: PropTypes.func.isRequired,
-  //   deleteGroup: PropTypes.func.isRequired
 };
 const mapStateToProps = state => ({
   auth: state.auth,
   test: state.test
 });
 
-export default connect(
-  mapStateToProps
-  //   { getGroupById, deleteGroup }
-)(Tests);
+export default connect(mapStateToProps)(Tests);

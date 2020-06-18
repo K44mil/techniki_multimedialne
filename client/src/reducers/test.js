@@ -22,7 +22,10 @@ import {
   GET_STUDENT_FINISHED_TEST_FAIL,
   GET_PARTICIPANTS_DETAILS_START,
   GET_PARTICIPANTS_DETAILS_SUCCESS,
-  GET_PARTICIPANTS_DETAILS_FAIL
+  GET_PARTICIPANTS_DETAILS_FAIL,
+  GET_ALL_STUDENT_TESTS_START,
+  GET_ALL_STUDENT_TESTS_SUCCESS,
+  GET_ALL_STUDENT_TESTS_FAIL
 } from '../actions/types';
 
 const initialState = {
@@ -43,6 +46,7 @@ export default function(state = initialState, action) {
     case ACTIVATE_TEST_START:
     case GET_STUDENT_FINISHED_TEST_START:
     case GET_PARTICIPANTS_DETAILS_START:
+    case GET_ALL_STUDENT_TESTS_START:
       return {
         ...state,
         loading: true
@@ -56,6 +60,7 @@ export default function(state = initialState, action) {
     case ACTIVATE_TEST_SUCCESS:
     case GET_STUDENT_FINISHED_TEST_FAIL:
     case GET_PARTICIPANTS_DETAILS_FAIL:
+    case GET_ALL_STUDENT_TESTS_FAIL:
       return {
         ...state,
         loading: false
@@ -70,6 +75,7 @@ export default function(state = initialState, action) {
     case GET_FINISHED_TESTS_SUCCESS:
     case GET_ACTIVE_TESTS_SUCCESS:
     case GET_STUDENT_FINISHED_TEST_SUCCESS:
+    case GET_ALL_STUDENT_TESTS_SUCCESS:
       return {
         ...state,
         loading: false,

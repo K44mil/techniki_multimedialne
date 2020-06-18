@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import { Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { getGroups } from '../../actions/group';
-import { getTestById, activateTest } from '../../actions/test';
+import { getParticipantsDetails } from '../../actions/test';
 import MUIDataTable from 'mui-datatables';
 import { CircularProgress } from '@material-ui/core';
-import { Modal } from '../shared/Modal';
-import ActivateTestForm from './ActivateTestForm';
 import {
   tableID,
   TableOptions
@@ -23,17 +21,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 export const groupId = {};
-const ActiveTestDetails = ({
-  test: { details, loading },
-  group: { groups },
-  auth: { user },
-  getTestById,
-  getGroups
-}) => {
+const ActiveTestDetails = ({ test: { details, loading } }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
-  const createForm = useRef(null);
 
   const columns = [
     {
@@ -43,55 +34,21 @@ const ActiveTestDetails = ({
       }
     },
     {
-      name: 'Nazwa grupy'
+      name: 'Status Testu'
     },
-    'Opis',
+    'Rezultat',
     ''
   ];
-  //   if (details && details !== undefined) {
-  //     localStorage.setItem('testId', test._id);
-  //   }
-  //   const [createOpen, setCreateOpen] = useState(false);
-  //   const handleCreateModal = () => {
-  //     setCreateOpen(!createOpen);
-  //   };
-  //   const handleCreate = (values, actions) => {
-  //     const data = {
-  //       availableAt: values.availableAt,
-  //       availableUntil: values.availableUntil,
-  //       groupId: tableID.ID,
-  //       testId: test._id
-  //     };
-  //     dispatch(activateTest(data));
-  //     actions.resetForm({});
-  //     setCreateOpen(!createOpen);
-  //   };
+  if (details && details !== undefined && details.details !== undefined) {
+    localStorage.setItem('testDetailsId', details.details[0].activeTestId);
+  }
 
-  //   const addCreateProps = {
-  //     initialState: {
-  //       availableAt: '',
-  //       availableUntil: ''
-  //     },
-  //     setRef: createForm,
-  //     handleSubmit: (values, actions) => {
-  //       handleCreate(values, actions);
-  //     }
-  //   };
-  //   useEffect(() => {
-  //     dispatch(() => getGroups());
-  //   }, [dispatch]);
+  useEffect(() => {
+    if (loading) {
+      dispatch(getParticipantsDetails(localStorage.getItem('testDetailsId')));
+    }
+  }, [loading]);
 
-  //   useEffect(() => {
-  //     if (loading) {
-  //       getTestById(localStorage.getItem('testId'));
-  //     }
-  //   }, [loading]);
-
-  //   const tableButton = (
-  //     <button className='dashboard-button task-btn' onClick={handleCreateModal}>
-  //       Aktywuj test
-  //     </button>
-  //   );
   if (loading) {
     return (
       <div className='loader'>
@@ -99,24 +56,24 @@ const ActiveTestDetails = ({
       </div>
     );
   }
-  if (details !== undefined && details !== null) {
-    //     const myGroups = groups.data.map(el => {
-    //       return Object.keys(el).map(key => {
-    //         if (key === 'name' || key === 'description' || key === '_id') {
-    //           return el[key];
-    //         }
-    //       });
-    //     });
+  if (
+    details !== undefined &&
+    details !== null &&
+    details.details !== undefined
+  ) {
+    const results = details.details.map(el => {
+      return Object.keys(el).map(key => {
+        if (key === 'status' || key === 'result' || key === '_id') {
+          return el[key];
+        }
+      });
+    });
 
-    //     const data = myGroups.map(el => {
-    //       return el.filter(value => value !== undefined);
-    //     });
-    //     const data2 = data.map(el => {
-    //       if (user !== null && user.role === 'teacher') {
-    //         el.push(tableButton);
-    //       }
-    //       return el;
-    //     });
+    const data = results.map(el => {
+      return el.filter(value => value !== undefined);
+    });
+    console.log(data);
+
     return (
       <>
         <section className='container container-dashboard'>
@@ -133,25 +90,17 @@ const ActiveTestDetails = ({
                   <span className='back-icon'>
                     <ArrowBackIcon />
                   </span>{' '}
-                  Test
+                  Testy
                 </button>
                 <div className='bg-light'>
                   <div className='container-profile'>
                     <h2 className='text-primary'>
-                      {details !== null ? details.name : ''}
+                      {details !== null ? details.testName : ''}
                     </h2>
                     {details !== null && details.description !== '' ? (
                       <>
-                        <h3 className='text-dark'>Opis</h3>
-                        <p>{details.description}</p>
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    {details !== null && details.createdAt !== '' ? (
-                      <>
-                        <h3 className='text-dark'>Data stworzenia</h3>
-                        <p>{new Date(details.createdAt).toLocaleString()}</p>
+                        <h3 className='text-dark'>Grupa</h3>
+                        <p>{details.groupName}</p>
                       </>
                     ) : (
                       ''
@@ -159,21 +108,21 @@ const ActiveTestDetails = ({
                   </div>
                 </div>
 
-                {/* <h2 className='text-primary'>Twoje grupy</h2>
-                {groups !== null ? (
+                <h2 className='text-primary'>Szczegóły testów</h2>
+                {details && details.details !== undefined ? (
                   <MUIDataTable
                     options={TableOptions}
-                    title='Twoje grupy'
+                    title='Szczegóły testów'
                     columns={columns}
-                    data={data2}
+                    data={data}
                   />
                 ) : (
                   <MUIDataTable
-                    title='Twoje grupy'
+                    title='szczegóły testów'
                     columns={columns}
                     options={TableOptions}
                   />
-                )} */}
+                )}
               </Grid>
             </Grid>
           </div>
@@ -189,7 +138,10 @@ const ActiveTestDetails = ({
               <Grid item xs>
                 <button
                   className='dashboard-button profile-btn'
-                  onClick={() => history.push('/tests')}
+                  onClick={() => {
+                    localStorage.removeItem('testDetailsId');
+                    history.push('/tests');
+                  }}
                 >
                   <span className='back-icon'>
                     <ArrowBackIcon />
@@ -198,34 +150,9 @@ const ActiveTestDetails = ({
                 </button>
                 <div className='bg-light'>
                   <div className='container-profile'>
-                    <h2 className='text-primary'>
-                      {test !== null ? test.name : ''}
-                    </h2>
-                    {test !== null && test.description !== '' ? (
-                      <>
-                        <h3 className='text-dark'>Opis</h3>
-                        <p>{test.description}</p>
-                      </>
-                    ) : (
-                      ''
-                    )}
-                    {test !== null && test.createdAt !== '' ? (
-                      <>
-                        <h3 className='text-dark'>Data stworzenia</h3>
-                        <p>${new Date(test.createdAt).toLocaleString()}</p>
-                      </>
-                    ) : (
-                      ''
-                    )}
+                    <h2 className='text-primary'></h2>
                   </div>
                 </div>
-
-                <h2 className='text-primary'>Twoje grupy</h2>
-                <MUIDataTable
-                  title='Twoje grupy'
-                  columns={columns}
-                  options={TableOptions}
-                />
               </Grid>
             </Grid>
           </div>
@@ -239,9 +166,7 @@ ActiveTestDetails.propTypes = {
   details: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   test: PropTypes.object.isRequired,
-  getTestById: PropTypes.func.isRequired,
-  getGroups: PropTypes.func.isRequired,
-  activateTest: PropTypes.func.isRequired
+  getParticipantsDetails: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -251,5 +176,5 @@ const mapStateToProps = state => ({
 });
 export default connect(
   mapStateToProps,
-  { getGroups, getTestById, activateTest }
+  { getParticipantsDetails }
 )(ActiveTestDetails);

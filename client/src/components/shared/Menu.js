@@ -123,7 +123,9 @@ const Menu = ({
       <button
         className='dashboard-button'
         type='submit'
-        onClick={() => history.push('/tests')}
+        onClick={() => {
+          history.push('/tests');
+        }}
       >
         Twoje testy
       </button>

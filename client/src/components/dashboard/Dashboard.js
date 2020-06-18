@@ -57,7 +57,8 @@ const Dashboard = ({
   if (localStorage.getItem('listening')) localStorage.removeItem('listening');
   if (localStorage.getItem('groupName')) localStorage.removeItem('groupName');
   if (localStorage.getItem('testId')) localStorage.removeItem('testId');
-
+  if (localStorage.getItem('testDetailsId'))
+    localStorage.removeItem('testDetailsId');
   if (loading || (loading && dashboard === null)) {
     return (
       <div className='loader'>
