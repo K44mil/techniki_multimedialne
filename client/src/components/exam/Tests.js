@@ -13,7 +13,8 @@ import {
   getTests,
   getFinishedTests,
   getActiveTests,
-  getTestById
+  getTestById,
+  getParticipantsDetails
 } from '../../actions/test';
 import {
   tableID,
@@ -26,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1
   }
 }));
-
+//1-all tests 2-active tests 3-finished tests
+let testFlag = 1;
 const Tests = ({ test: { tests, loading }, auth: { user } }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -43,6 +45,22 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     },
     'Opis',
     'Data stworzenia',
+    ''
+  ];
+
+  const columnsActive = [
+    {
+      name: 'id',
+      options: {
+        display: 'false'
+      }
+    },
+    {
+      name: 'Nazwa testu'
+    },
+    'Nazwa grupy',
+    'Liczba skończonych testów',
+    'Liczba uczestników',
     ''
   ];
 
@@ -66,51 +84,61 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
         className='dashboard-button'
         onClick={() => {
           setTimeout(() => {
-            dispatch(getTestById(tableID.ID));
-            // dispatch(getGroups());
-            history.push('/examProfile');
+            testFlag === 1
+              ? dispatch(getTestById(tableID.ID))
+              : testFlag === 2
+              ? dispatch(getParticipantsDetails(tableID.ID))
+              : dispatch(getTestById(tableID.ID));
+            testFlag === 1
+              ? history.push('/examProfile')
+              : testFlag === 2
+              ? history.push('/testDetails')
+              : history.push('/examProfile');
           }, 100);
         }}
       >
         Pokaż
       </button>
     );
-
-    //     const deleteGroupButton = (
-    //       <button
-    //         className='dashboard-button'
-    //         onClick={() => {
-    //           setTimeout(() => {
-    //             deleteGroup(tableID.ID);
-    //           }, 100);
-    //         }}
-    //       >
-    //         Usuń
-    //       </button>
-    //     );
-
+    if (testFlag === 1) {
+    }
     const myTests = tests.map(el => {
       return Object.keys(el).map(key => {
-        if (
-          key === 'name' ||
-          key === 'description' ||
-          key === '_id' ||
-          key === 'createdAt'
-        ) {
-          return el[key];
+        if (testFlag === 1) {
+          if (
+            key === 'name' ||
+            key === 'description' ||
+            key === '_id' ||
+            key === 'createdAt'
+          )
+            return el[key];
+        } else if (testFlag === 2) {
+          console.log('hejo');
+
+          if (
+            key === 'groupName' ||
+            key === 'testName' ||
+            key === '_id' ||
+            key === 'numberOfCompleted' ||
+            key === 'numberOfParticipants'
+          )
+            return el[key];
         }
       });
     });
+    console.log(testFlag);
 
     const data = myTests.map(el => {
       return el.filter(value => value !== undefined);
     });
+    if (testFlag === 1) {
+      data.forEach(el => {
+        el[el.length - 1] = (
+          <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
+        );
+      });
+    }
 
-    data.forEach(el => {
-      el[el.length - 1] = (
-        <Moment format='DD/MM/YYYY'>{el[el.length - 1]}</Moment>
-      );
-    });
     console.log(data);
 
     const data2 = data.map(el => {
@@ -132,6 +160,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               <button
                 className='btn-primary dashboard-button'
                 onClick={() => {
+                  testFlag = 2;
                   dispatch(getActiveTests());
                 }}
               >
@@ -142,6 +171,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               <button
                 className='btn-orange dashboard-button'
                 onClick={() => {
+                  testFlag = 3;
                   dispatch(getFinishedTests());
                 }}
               >
@@ -152,6 +182,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               <button
                 className='btn-success dashboard-button'
                 onClick={() => {
+                  testFlag = 1;
                   dispatch(getTests());
                 }}
               >
@@ -159,10 +190,17 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               </button>
             </Grid>
             <Grid item xs>
+              {}
               <MUIDataTable
                 title='Twoje testy'
                 data={data2}
-                columns={columns}
+                columns={
+                  testFlag === 1
+                    ? columns
+                    : testFlag === 2
+                    ? columnsActive
+                    : columns
+                }
                 options={TableOptions}
               />
             </Grid>

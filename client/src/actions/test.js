@@ -16,7 +16,13 @@ import {
   GET_TEST_BY_ID_FAIL,
   ACTIVATE_TEST_START,
   ACTIVATE_TEST_SUCCESS,
-  ACTIVATE_TEST_FAIL
+  ACTIVATE_TEST_FAIL,
+  GET_STUDENT_FINISHED_TEST_START,
+  GET_STUDENT_FINISHED_TEST_SUCCESS,
+  GET_STUDENT_FINISHED_TEST_FAIL,
+  GET_PARTICIPANTS_DETAILS_START,
+  GET_PARTICIPANTS_DETAILS_SUCCESS,
+  GET_PARTICIPANTS_DETAILS_FAIL
 } from './types';
 import { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
@@ -138,6 +144,43 @@ export const activateTest = ({
   } catch (err) {
     dispatch({
       type: ACTIVATE_TEST_FAIL
+    });
+  }
+};
+
+export const getStudentFinishedTests = () => async dispatch => {
+  dispatch({
+    type: GET_STUDENT_FINISHED_TEST_START
+  });
+
+  try {
+    const res = await client.get(`/api/v1/tests/myFinishedTests`);
+
+    dispatch({
+      type: GET_STUDENT_FINISHED_TEST_SUCCESS,
+      payload: res.data.data
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_STUDENT_FINISHED_TEST_FAIL
+    });
+  }
+};
+
+export const getParticipantsDetails = id => async dispatch => {
+  dispatch({
+    type: GET_PARTICIPANTS_DETAILS_START
+  });
+  try {
+    const res = await client.get(`/api/v1/tests/${id}/details`);
+
+    dispatch({
+      type: GET_PARTICIPANTS_DETAILS_SUCCESS,
+      payload: res.data.data
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_PARTICIPANTS_DETAILS_FAIL
     });
   }
 };
