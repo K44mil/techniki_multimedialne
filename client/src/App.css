@@ -299,6 +299,7 @@ button {
 .box-post {
   background-color: white;
   border: #ccc solid 1px;
+  text-align: center;
 }
 
 .p-dashboard {
@@ -476,4 +477,15 @@ h2 {
   padding: 5px;
   height: 40px;
   flex: 1;
+}
+
+.answer-box {
+  display: inline-block;
+  padding-right: 10px;
+}
+
+.counter {
+  position: relative;
+  top: 0px;
+  left: 44%;
 }

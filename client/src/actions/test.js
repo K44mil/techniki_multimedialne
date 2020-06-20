@@ -25,7 +25,10 @@ import {
   GET_PARTICIPANTS_DETAILS_FAIL,
   GET_ALL_STUDENT_TESTS_START,
   GET_ALL_STUDENT_TESTS_SUCCESS,
-  GET_ALL_STUDENT_TESTS_FAIL
+  GET_ALL_STUDENT_TESTS_FAIL,
+  GET_STUDENT_TEST_BY_ID_START,
+  GET_STUDENT_TEST_BY_ID_SUCCESS,
+  GET_STUDENT_TEST_BY_ID_FAIL
 } from './types';
 import { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
@@ -203,6 +206,25 @@ export const getAllStudentTests = () => async dispatch => {
   } catch (err) {
     dispatch({
       type: GET_ALL_STUDENT_TESTS_FAIL
+    });
+  }
+};
+
+export const getStudentTestById = id => async dispatch => {
+  dispatch({
+    type: GET_STUDENT_TEST_BY_ID_START
+  });
+
+  try {
+    const res = await client.get(`/api/v1/tests/startTest/${id}`);
+
+    dispatch({
+      type: GET_STUDENT_TEST_BY_ID_SUCCESS,
+      payload: res.data.data
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_STUDENT_TEST_BY_ID_FAIL
     });
   }
 };

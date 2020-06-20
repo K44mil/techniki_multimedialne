@@ -6,7 +6,6 @@ import MUIDataTable from 'mui-datatables';
 import { makeStyles } from '@material-ui/core/styles';
 import { CircularProgress } from '@material-ui/core';
 import Moment from 'react-moment';
-
 import Menu from '../shared/Menu';
 import PropTypes from 'prop-types';
 import {
@@ -16,7 +15,8 @@ import {
   getTestById,
   getParticipantsDetails,
   getAllStudentTests,
-  getStudentFinishedTests
+  getStudentFinishedTests,
+  getStudentTestById
 } from '../../actions/test';
 import {
   tableID,
@@ -79,7 +79,8 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     },
     'Rezultat',
     'Nazwa testy',
-    'Nazwa grupy'
+    'Nazwa grupy',
+    ''
   ];
 
   useEffect(() => {
@@ -117,6 +118,21 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
         }}
       >
         Pokaż
+      </button>
+    );
+
+    const studentTableButton = (
+      <button
+        className='dashboard-button'
+        onClick={() => {
+          setTimeout(() => {
+            dispatch(getStudentTestById(tableID.ID));
+            localStorage.setItem('time', '10');
+            history.push('/test');
+          }, 100);
+        }}
+      >
+        Rozpocznij test
       </button>
     );
     if (testFlag === 1) {
@@ -183,7 +199,8 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     const data2 = data.map(el => {
       if (user !== null && user.role === 'teacher') {
         el.push(tableButton);
-      }
+      } else if (user && user.role === 'student' && testFlagStudent === 2)
+        el.push(studentTableButton);
       return el;
     });
 
@@ -263,7 +280,12 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               {}
               <MUIDataTable
                 title='Twoje testy'
-                data={user && user.role === 'teacher' ? data2 : data}
+                data={
+                  (user && user.role === 'teacher') ||
+                  (user.role === 'student' && testFlagStudent === 2)
+                    ? data2
+                    : data
+                }
                 columns={
                   testFlag === 1 && user && user.role === 'teacher'
                     ? columns
