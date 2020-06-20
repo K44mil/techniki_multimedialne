@@ -293,3 +293,58 @@ exports.getTest = asyncHandler(async (req, res, next) => {
     data: test
   });
 });
+
+// @desc    Get test by id (for student)
+// @route   GET /api/v1/startTest/:id (id <- userTestId)
+// @access  Private
+exports.startTest = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  const userTest = await UserTest.findById(req.params.id);
+  if (!userTest) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+  if (userTest.userId.toString() !== user.id.toString()) {
+    return next(
+      new ErrorResponse(`Not authorized.`, 401)
+    );
+  }
+  const activeTest = await ActiveTest.findById(userTest.activeTestId);
+  if (!activeTest) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+  const test = await Test.findById(activeTest.testId);
+  if (!test) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+  const questions = await Question.find({ testId: test.id }).select('-__v').lean();
+  const finalQuestions = [];
+
+  for (const q of questions) {
+    let question = q;
+    if (q.type === 'z') {
+      let answers = await Answer.find({ questionId: q._id }).select('-isCorrect -__v');
+      // console.log(answers);
+      question.answers = answers;
+    }
+    finalQuestions.push(question);
+  }
+
+  let resTest = {
+    _id: userTest.id,
+    questions: finalQuestions
+  };
+
+  await userTest.updateOne({ status: 'W trakcie' });
+
+  // Send response
+  res.status(200).json({
+    success: true,
+    data: resTest
+  });
+});
