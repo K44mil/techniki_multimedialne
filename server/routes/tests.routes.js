@@ -7,7 +7,8 @@ const { createTest,
         getFinishedTests,
         getActiveTests,
         getTestDetails,
-        getMyFinishedTests
+        getMyFinishedTests,
+        startTest
 } = require('../controllers/tests.controller');
 
 router
@@ -26,6 +27,10 @@ router
 router
     .route('/activeTests')
     .get(protect, getActiveTests);
+
+router
+    .route('/startTest/:id')
+    .get(protect, startTest);
 
 router
     .route('/:id/details')
