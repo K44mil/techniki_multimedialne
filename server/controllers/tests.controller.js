@@ -344,3 +344,79 @@ exports.startTest = asyncHandler(async (req, res, next) => {
     data: resTest
   });
 });
+
+
+// @desc    Check test and send result (for student)
+// @route   POST /api/v1/tests/checkTest/:id (id <- userTestId)
+// @access  Private
+exports.checkTest = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  const { answers } = req.body;
+  const userTest = await UserTest.findById(req.params.id);
+  if (!userTest) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+  if (userTest.userId.toString() !== user.id.toString()) {
+    return next(
+      new ErrorResponse(`Not authorized.`, 401)
+    );
+  }
+  const activeTest = await ActiveTest.findById(userTest.activeTestId);
+  if (!activeTest) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+  const test = await Test.findById(activeTest.testId);
+  if (!test) {
+    return next(
+      new ErrorResponse(`Test not found.`, 400)
+    );
+  }
+
+  let points = 0;
+
+  for (const a of answers) {
+    const question = await Question.findById(a.id);
+    if (question) {
+      if (question.type === 'z') {
+        const { selected } = a;
+        const qAnswers = await Answer.find({ questionId: { $in: selected } });
+        let add = true;
+        for(const qA of qAnswers) {
+          if (!qA.isCorrect)
+            add = false;
+        }
+        if (add)
+          points++;
+      } else if (question.type === 'o') {
+        const qAnswers = await Answer.find({ questionId: question.id });
+        const { key } = a;
+        for (const qA of qAnswers) {
+          if(qA.text == key)
+            points++;
+        }
+      }
+    }
+  }
+
+  let result = String(points) + '/' + String(test.numberOfQuestions);
+  await userTest.updateOne({
+    result: result,
+    status: 'Zakończony'
+  });
+
+  let completed = activeTest.numberOfCompleted + 1;
+
+  await activeTest.updateOne({
+    numberOfCompleted: completed
+  });
+
+  // Send response
+  res.status(200).json({
+    success: true,
+    data: userTest
+  });
+});
