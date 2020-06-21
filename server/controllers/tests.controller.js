@@ -359,7 +359,7 @@ exports.startTest = asyncHandler(async (req, res, next) => {
 exports.checkTest = asyncHandler(async (req, res, next) => {
   const user = req.user;
   const { answers } = req.body;
-  const userTest = await UserTest.findById(req.params.id);
+  const userTest = await UserTest.findById(req.params.id).lean();
   if (!userTest) {
     return next(
       new ErrorResponse(`Test not found.`, 400)
