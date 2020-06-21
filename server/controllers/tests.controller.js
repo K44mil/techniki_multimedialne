@@ -410,10 +410,15 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
   }
 
   let result = String(points) + '/' + String(test.numberOfQuestions);
-  const resUserTest = await userTest.updateOne({
-    result: result,
-    status: 'Zakończony'
-  });
+  
+  userTest.result = result;
+  userTest.status = 'Zakończony';
+  await userTest.save();
+
+  // await userTest.updateOne({
+  //   result: result,
+  //   status: 'Zakończony'
+  // });
 
   let completed = activeTest.numberOfCompleted + 1;
 
@@ -424,6 +429,6 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
   // Send response
   res.status(200).json({
     success: true,
-    data: resUserTest
+    data: userTest
   });
 });
