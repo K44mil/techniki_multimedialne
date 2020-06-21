@@ -237,7 +237,7 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
       let obj = uT;
       obj.testName = test.name;
       obj.groupName = group.name;
-      if (obj.status == 'Zakończono')
+      if (obj.status === 'Zakończono')
         finishedTests.push(obj);
     }
   }
@@ -354,7 +354,7 @@ exports.startTest = asyncHandler(async (req, res, next) => {
 exports.checkTest = asyncHandler(async (req, res, next) => {
   const user = req.user;
   const { answers } = req.body;
-  const userTest = await UserTest.findById(req.params.id).lean();
+  const userTest = await UserTest.findById(req.params.id);
   if (!userTest) {
     return next(new ErrorResponse(`Test not found.`, 400));
   }
@@ -394,15 +394,13 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
   }
 
   let result = String(points) + '/' + String(test.numberOfQuestions);
-  
-  userTest.result = result;
-  userTest.status = 'Zakończony';
-  await userTest.save();
 
-  // await userTest.updateOne({
-  //   result: result,
-  //   status: 'Zakończony'
-  // });
+  await userTest.updateOne({
+    result: result,
+    status: 'Zakończony'
+  });
+
+  const resUserTest = await UserTest.findById(userTest._id);
 
   let completed = activeTest.numberOfCompleted + 1;
 
@@ -413,6 +411,6 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
   // Send response
   res.status(200).json({
     success: true,
-    data: userTest
+    data: resUserTest
   });
 });
