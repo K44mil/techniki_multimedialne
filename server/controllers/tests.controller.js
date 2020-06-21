@@ -26,7 +26,8 @@ exports.createTest = asyncHandler(async (req, res, next) => {
     const question = await Question.create({
       text: q.text,
       type: q.type,
-      testId: test.id
+      testId: test.id,
+      time: q.time
     });
     for (const a of q.answers) {
       await Answer.create({
@@ -225,17 +226,19 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
   const userTests = await UserTest.find({
     userId: user.id
   }).lean();
+  
   let finishedTests = [];
   for (const uT of userTests) {
     const activeTest = await ActiveTest.findById(uT.activeTestId);
 
-    if (activeTest && activeTest.availableUntil < new Date()) {
+    if (activeTest) {
       const test = await Test.findById(activeTest.testId);
       const group = await Group.findById(activeTest.groupId);
       let obj = uT;
       obj.testName = test.name;
       obj.groupName = group.name;
-      finishedTests.push(obj);
+      if (obj.status == 'Zakończono')
+        finishedTests.push(obj);
     }
   }
   // Send response
