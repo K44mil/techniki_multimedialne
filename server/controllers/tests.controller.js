@@ -345,7 +345,6 @@ exports.startTest = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 // @desc    Check test and send result (for student)
 // @route   POST /api/v1/tests/checkTest/:id (id <- userTestId)
 // @access  Private
@@ -354,26 +353,18 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
   const { answers } = req.body;
   const userTest = await UserTest.findById(req.params.id);
   if (!userTest) {
-    return next(
-      new ErrorResponse(`Test not found.`, 400)
-    );
+    return next(new ErrorResponse(`Test not found.`, 400));
   }
   if (userTest.userId.toString() !== user.id.toString()) {
-    return next(
-      new ErrorResponse(`Not authorized.`, 401)
-    );
+    return next(new ErrorResponse(`Not authorized.`, 401));
   }
   const activeTest = await ActiveTest.findById(userTest.activeTestId);
   if (!activeTest) {
-    return next(
-      new ErrorResponse(`Test not found.`, 400)
-    );
+    return next(new ErrorResponse(`Test not found.`, 400));
   }
   const test = await Test.findById(activeTest.testId);
   if (!test) {
-    return next(
-      new ErrorResponse(`Test not found.`, 400)
-    );
+    return next(new ErrorResponse(`Test not found.`, 400));
   }
 
   let points = 0;
@@ -385,18 +376,15 @@ exports.checkTest = asyncHandler(async (req, res, next) => {
         const { selected } = a;
         const qAnswers = await Answer.find({ questionId: { $in: selected } });
         let add = true;
-        for(const qA of qAnswers) {
-          if (!qA.isCorrect)
-            add = false;
+        for (const qA of qAnswers) {
+          if (!qA.isCorrect) add = false;
         }
-        if (add)
-          points++;
+        if (add) points++;
       } else if (question.type === 'o') {
         const qAnswers = await Answer.find({ questionId: question.id });
         const { key } = a;
         for (const qA of qAnswers) {
-          if(qA.text == key)
-            points++;
+          if (qA.text == key) points++;
         }
       }
     }

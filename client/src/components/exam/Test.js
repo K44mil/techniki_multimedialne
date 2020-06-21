@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ReactCountdownClock from 'react-countdown-clock';
+import { checkTestResult } from '../../actions/test';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -20,7 +21,7 @@ const Test = ({ test: { test, loading } }) => {
   const [counter, setCounter] = useState(
     parseInt(localStorage.getItem('time'))
   );
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const timer =
       counter > 0 &&
@@ -70,9 +71,10 @@ const Test = ({ test: { test, loading } }) => {
                         alpha={0.9}
                         size={100}
                         onComplete={() => {
-                          if (questionNumber + 1 == test.questions.length)
+                          if (questionNumber + 1 == test.questions.length) {
+                            dispatch(checkTestResult(test._id, answers));
                             history.push('/tests');
-                          else {
+                          } else {
                             setCounter(10);
                             setQuestionNumber(questionNumber + 1);
                           }
@@ -252,9 +254,10 @@ const Test = ({ test: { test, loading } }) => {
                         alpha={0.9}
                         size={100}
                         onComplete={() => {
-                          if (questionNumber + 1 == test.questions.length)
+                          if (questionNumber + 1 == test.questions.length) {
+                            dispatch(checkTestResult(test._id, answers));
                             history.push('/tests');
-                          else {
+                          } else {
                             setCounter(10);
                             setQuestionNumber(questionNumber + 1);
                           }
@@ -316,9 +319,10 @@ const Test = ({ test: { test, loading } }) => {
               let answer = answerData.answer;
               answers.push({ answer, id });
             }
-            if (questionNumber + 1 == test.questions.length)
+            if (questionNumber + 1 == test.questions.length) {
+              dispatch(checkTestResult(test._id, answers));
               history.push('/tests');
-            else {
+            } else {
               setCounter(10);
               setQuestionNumber(questionNumber + 1);
             }

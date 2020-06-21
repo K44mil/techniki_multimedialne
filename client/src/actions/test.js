@@ -28,7 +28,10 @@ import {
   GET_ALL_STUDENT_TESTS_FAIL,
   GET_STUDENT_TEST_BY_ID_START,
   GET_STUDENT_TEST_BY_ID_SUCCESS,
-  GET_STUDENT_TEST_BY_ID_FAIL
+  GET_STUDENT_TEST_BY_ID_FAIL,
+  CHECK_TEST_RESULT_START,
+  CHECK_TEST_RESULT_SUCCESS,
+  CHECK_TEST_RESULT_FAIL
 } from './types';
 import { client } from '../utils/setAuthToken';
 import { setAlert } from './alert';
@@ -225,6 +228,26 @@ export const getStudentTestById = id => async dispatch => {
   } catch (err) {
     dispatch({
       type: GET_STUDENT_TEST_BY_ID_FAIL
+    });
+  }
+};
+
+export const checkTestResult = (id, answers) => async dispatch => {
+  dispatch({
+    type: CHECK_TEST_RESULT_START
+  });
+  try {
+    const body = { answers };
+
+    const res = await client.post(`/api/v1/tests/checkTest/${id}`, body);
+
+    dispatch({
+      type: CHECK_TEST_RESULT_SUCCESS,
+      payload: res.data.data
+    });
+  } catch (err) {
+    dispatch({
+      type: CHECK_TEST_RESULT_FAIL
     });
   }
 };

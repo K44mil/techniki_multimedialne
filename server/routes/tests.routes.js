@@ -11,7 +11,8 @@ const {
   getMyFinishedTests,
   getTest,
   getMyActiveTests,
-  startTest
+  startTest,
+  checkTest
 } = require('../controllers/tests.controller');
 
 router
@@ -32,6 +33,8 @@ router.route('/:id/details').get(protect, getTestDetails);
 router.route('/myFinishedTests').get(protect, getMyFinishedTests);
 router.route('/myActiveTests').get(protect, getMyActiveTests);
 router.route('/startTest/:id').get(protect, startTest);
+
+router.route('/checkTest/:id').post(protect, checkTest);
 
 router.route('/:id').get(protect, getTest);
 

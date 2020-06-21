@@ -28,14 +28,18 @@ import {
   GET_ALL_STUDENT_TESTS_FAIL,
   GET_STUDENT_TEST_BY_ID_START,
   GET_STUDENT_TEST_BY_ID_SUCCESS,
-  GET_STUDENT_TEST_BY_ID_FAIL
+  GET_STUDENT_TEST_BY_ID_FAIL,
+  CHECK_TEST_RESULT_START,
+  CHECK_TEST_RESULT_SUCCESS,
+  CHECK_TEST_RESULT_FAIL
 } from '../actions/types';
 
 const initialState = {
   loading: true,
   test: null,
   tests: [],
-  details: []
+  details: [],
+  result: null
 };
 
 export default function(state = initialState, action) {
@@ -51,6 +55,7 @@ export default function(state = initialState, action) {
     case GET_PARTICIPANTS_DETAILS_START:
     case GET_ALL_STUDENT_TESTS_START:
     case GET_STUDENT_TEST_BY_ID_START:
+    case CHECK_TEST_RESULT_START:
       return {
         ...state,
         loading: true
@@ -66,6 +71,7 @@ export default function(state = initialState, action) {
     case GET_PARTICIPANTS_DETAILS_FAIL:
     case GET_ALL_STUDENT_TESTS_FAIL:
     case GET_STUDENT_TEST_BY_ID_FAIL:
+    case CHECK_TEST_RESULT_FAIL:
       return {
         ...state,
         loading: false
@@ -98,6 +104,12 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         details: payload
+      };
+    case CHECK_TEST_RESULT_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        result: payload
       };
     default:
       return state;
