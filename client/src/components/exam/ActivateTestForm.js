@@ -1,7 +1,8 @@
 import React from 'react';
 import { Formik, Form, Field } from 'formik';
+import { TextField } from 'formik-material-ui';
 import * as Yup from 'yup';
-
+import { makeStyles } from '@material-ui/core/styles';
 function formatDate() {
   const today = new Date();
   const date =
@@ -31,12 +32,25 @@ const ActivateTestForm = ({ initialState, handleSubmit }) => {
         <Form className='form'>
           <div className='form-group'>
             <h2 className='primary-text'>Aktywny od</h2>
-            <Field name='availableAt' type='date' placeholder='Aktywny od' />
+            <Field
+              name='availableAt'
+              type='date'
+              component={TextField}
+              type='datetime-local'
+            />
+
             {errors.date && touched.date ? <div>{errors.date}</div> : null}
           </div>
           <div className='form-group'>
             <h2 className='primary-text'>Aktywny do</h2>
-            <Field name='availableUntil' type='date' placeholder='Aktywny do' />
+
+            <Field
+              name='availableUntil'
+              type='date'
+              component={TextField}
+              type='datetime-local'
+            />
+
             {errors.date && touched.date ? <div>{errors.date}</div> : null}
           </div>
           <button type='submit' className='dashboard-button btn-primary'>

@@ -25,6 +25,8 @@ import Tests from './components/exam/Tests';
 import ExamProfile from './components/exam/ExamProfile';
 import ActiveTestDetails from './components/exam/ActiveTestDetails';
 import Test from './components/exam/Test';
+import TestResult from './components/exam/TestResult';
+
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
@@ -69,6 +71,7 @@ const App = () => {
               component={ActiveTestDetails}
             />
             <PrivateRoute exact path='/test' component={Test} />
+            <PrivateRoute exact path='/testResult' component={TestResult} />
           </Switch>
         </Provider>
       </Fragment>

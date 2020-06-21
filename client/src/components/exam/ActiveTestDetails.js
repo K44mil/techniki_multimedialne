@@ -1,18 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { getGroups } from '../../actions/group';
 import { getParticipantsDetails } from '../../actions/test';
 import MUIDataTable from 'mui-datatables';
 import { CircularProgress } from '@material-ui/core';
-import {
-  tableID,
-  TableOptions
-} from '../../shared/consts/TableOption.constants';
+import { TableOptions } from '../../shared/consts/TableOption.constants';
 
 const useStyles = makeStyles(theme => ({
   root: {

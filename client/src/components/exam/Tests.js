@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 //1-all tests 2-active tests 3-finished tests
 let testFlag = 1;
 let testFlagStudent = 2;
-const Tests = ({ test: { tests, loading }, auth: { user } }) => {
+const Tests = ({ test: { tests, test, loading }, auth: { user } }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -127,7 +127,6 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
         onClick={() => {
           setTimeout(() => {
             dispatch(getStudentTestById(tableID.ID));
-            localStorage.setItem('time', '10');
             history.push('/test');
           }, 100);
         }}
@@ -167,7 +166,7 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
               key === 'createdAt'
             )
               return el[key];
-          } else if (testFlagStudent === 2) {
+          } else if (testFlagStudent === 2 || testFlagStudent === 3) {
             if (
               key === 'groupName' ||
               key === 'testName' ||
@@ -199,7 +198,12 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
     const data2 = data.map(el => {
       if (user !== null && user.role === 'teacher') {
         el.push(tableButton);
-      } else if (user && user.role === 'student' && testFlagStudent === 2)
+      } else if (
+        user &&
+        user.role === 'student' &&
+        testFlagStudent === 2 &&
+        el[1] === 'Nierozpoczęty'
+      )
         el.push(studentTableButton);
       return el;
     });
@@ -291,7 +295,9 @@ const Tests = ({ test: { tests, loading }, auth: { user } }) => {
                     ? columns
                     : testFlag === 2 && user && user.role === 'teacher'
                     ? columnsActive
-                    : testFlagStudent === 2 && user && user.role === 'student'
+                    : (testFlagStudent === 2 || testFlagStudent === 3) &&
+                      user &&
+                      user.role === 'student'
                     ? columnsStudent
                     : columns
                 }

@@ -1,21 +1,11 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import { FormGroup } from '@material-ui/core';
-const openQuestionSchema = Yup.object().shape({
-  text: Yup.string().required('Podaj treść'),
-  answerA: Yup.string().required('Podaj odpowiedź'),
-  answerB: Yup.string().required('Podaj odpowiedź'),
-  answerC: Yup.string().required('Podaj odpowiedź'),
-  answerD: Yup.string().required('Podaj odpowiedź')
-});
 
 const OpenQuestionForm = ({ initialState, number, questionParams }) => {
   const [formData, setFormData] = useState({
     text: '',
-    type: 'o'
+    type: 'o',
+    time: 0
   });
 
   const [formAnswers, setFormAnswers] = useState({});
@@ -81,6 +71,15 @@ const OpenQuestionForm = ({ initialState, number, questionParams }) => {
               component='textarea'
               name='text'
               placeholder='Treść zadania'
+            />
+            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+          </div>
+          <div className='form-group' onChange={getValues}>
+            <p className='lead'>Czas na pytanie</p>
+            <Field
+              type='text'
+              name='time'
+              placeholder='Czas na pytanie w sekundach'
             />
             {errors.value && touched.value ? <div>{errors.value}</div> : null}
           </div>

@@ -226,7 +226,7 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
   const userTests = await UserTest.find({
     userId: user.id
   }).lean();
-  
+
   let finishedTests = [];
   for (const uT of userTests) {
     const activeTest = await ActiveTest.findById(uT.activeTestId);
@@ -237,8 +237,7 @@ exports.getMyFinishedTests = asyncHandler(async (req, res, next) => {
       let obj = uT;
       obj.testName = test.name;
       obj.groupName = group.name;
-      if (obj.status === 'Zakończono')
-        finishedTests.push(obj);
+      if (obj.status === 'Zakończony') finishedTests.push(obj);
     }
   }
   // Send response

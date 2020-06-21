@@ -9,6 +9,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ReactCountdownClock from 'react-countdown-clock';
 import { checkTestResult } from '../../actions/test';
+import { CircularProgress } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,16 +18,30 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 const answers = [];
+let flaga = 1;
 const Test = ({ test: { test, loading } }) => {
+  const [questionNumber, setQuestionNumber] = useState(0);
   const [counter, setCounter] = useState(
-    parseInt(localStorage.getItem('time'))
+    test && test.questions ? test.questions[questionNumber].time : 0
   );
+
+  let check = function() {
+    setTimeout(function() {
+      if (loading) check();
+      else {
+        setCounter(test.questions[0].time);
+        flaga = 0;
+      }
+    }, 500);
+  };
+  if (flaga) check();
+
   const dispatch = useDispatch();
+
   useEffect(() => {
     const timer =
       counter > 0 &&
       setInterval(() => {
-        localStorage.setItem('time', counter.toString());
         setCounter(counter - 1);
       }, 1000);
     return () => clearInterval(timer);
@@ -50,8 +65,13 @@ const Test = ({ test: { test, loading } }) => {
   const handleChange = event => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
-  const [questionNumber, setQuestionNumber] = useState(0);
-
+  if (loading || (loading && test === null)) {
+    return (
+      <div className='loader'>
+        <CircularProgress />
+      </div>
+    );
+  }
   return (
     <section className='container container-dashboard'>
       <div className={classes.root}>
@@ -64,24 +84,28 @@ const Test = ({ test: { test, loading } }) => {
                 test.questions !== undefined &&
                 test.questions[questionNumber].type === 'z' ? (
                   <>
-                    <div className='counter'>
-                      <ReactCountdownClock
-                        seconds={counter}
-                        color='#000'
-                        alpha={0.9}
-                        size={100}
-                        onComplete={() => {
-                          if (questionNumber + 1 == test.questions.length) {
-                            dispatch(checkTestResult(test._id, answers));
-                            history.push('/tests');
-                          } else {
-                            setCounter(10);
-                            setQuestionNumber(questionNumber + 1);
-                          }
-                        }}
-                      />
-                    </div>
-
+                    {' '}
+                    {counter > 0 ? (
+                      <div className='counter'>
+                        <ReactCountdownClock
+                          seconds={counter}
+                          color='#000'
+                          alpha={0.9}
+                          size={100}
+                          onComplete={() => {
+                            if (questionNumber + 1 === test.questions.length) {
+                              dispatch(checkTestResult(test._id, answers));
+                              history.push('/testResult');
+                            } else {
+                              setQuestionNumber(questionNumber + 1);
+                              setCounter(test.questions[questionNumber].time);
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      ''
+                    )}
                     <h2 className='text-primary'>
                       {test.questions[questionNumber].text}
                     </h2>
@@ -247,23 +271,27 @@ const Test = ({ test: { test, loading } }) => {
                   test.questions !== undefined &&
                   test.questions[questionNumber].type === 'o' ? (
                   <>
-                    <div className='counter'>
-                      <ReactCountdownClock
-                        seconds={counter}
-                        color='#000'
-                        alpha={0.9}
-                        size={100}
-                        onComplete={() => {
-                          if (questionNumber + 1 == test.questions.length) {
-                            dispatch(checkTestResult(test._id, answers));
-                            history.push('/tests');
-                          } else {
-                            setCounter(10);
-                            setQuestionNumber(questionNumber + 1);
-                          }
-                        }}
-                      />
-                    </div>
+                    {counter > 0 ? (
+                      <div className='counter'>
+                        <ReactCountdownClock
+                          seconds={counter}
+                          color='#000'
+                          alpha={0.9}
+                          size={100}
+                          onComplete={() => {
+                            if (questionNumber + 1 === test.questions.length) {
+                              dispatch(checkTestResult(test._id, answers));
+                              history.push('/testResult');
+                            } else {
+                              setQuestionNumber(questionNumber + 1);
+                              setCounter(test.questions[questionNumber].time);
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      ''
+                    )}
 
                     <h2 className='text-primary'>
                       {test.questions[questionNumber].text}
@@ -319,15 +347,13 @@ const Test = ({ test: { test, loading } }) => {
               let answer = answerData.answer;
               answers.push({ answer, id });
             }
-            if (questionNumber + 1 == test.questions.length) {
+            if (questionNumber + 1 === test.questions.length) {
               dispatch(checkTestResult(test._id, answers));
-              history.push('/tests');
+              history.push('/testResult');
             } else {
-              setCounter(10);
               setQuestionNumber(questionNumber + 1);
+              setCounter(test.questions[questionNumber + 1].time);
             }
-
-            console.log(answers);
           }}
           type='submit'
         >

@@ -150,6 +150,7 @@ export const activateTest = ({
       type: ACTIVATE_TEST_SUCCESS,
       payload: res.data
     });
+    dispatch(setAlert('Aktywowano test', 'success'));
   } catch (err) {
     dispatch({
       type: ACTIVATE_TEST_FAIL

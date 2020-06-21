@@ -59,6 +59,8 @@ const Dashboard = ({
   if (localStorage.getItem('testId')) localStorage.removeItem('testId');
   if (localStorage.getItem('testDetailsId'))
     localStorage.removeItem('testDetailsId');
+
+  if (localStorage.getItem('time')) localStorage.removeItem('time');
   if (loading || (loading && dashboard === null)) {
     return (
       <div className='loader'>

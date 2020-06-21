@@ -26,7 +26,8 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
 
   const [formData, setFormData] = useState({
     text: '',
-    type: 'z'
+    type: 'z',
+    time: 0
   });
 
   const [formAnswers, setFormAnswers] = useState({});
@@ -147,6 +148,15 @@ const TestQuestionForm = ({ initialState, number, questionParams }) => {
               component='textarea'
               name='text'
               placeholder='Treść zadania'
+            />
+            {errors.value && touched.value ? <div>{errors.value}</div> : null}
+          </div>
+          <div className='form-group' onChange={getValues}>
+            <p className='lead'>Czas na pytanie</p>
+            <Field
+              type='text'
+              name='time'
+              placeholder='Czas na pytanie w sekundach'
             />
             {errors.value && touched.value ? <div>{errors.value}</div> : null}
           </div>
