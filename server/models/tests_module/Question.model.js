@@ -15,6 +15,9 @@ const QuestionSchema = new mongoose.Schema({
         type: mongoose.Schema.ObjectId,
         required: true,
         ref: 'Test'
+    },
+    time: {
+        type: Number
     }
 });
 
