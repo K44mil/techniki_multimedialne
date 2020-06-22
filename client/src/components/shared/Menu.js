@@ -255,7 +255,7 @@ const Menu = ({
               <Grid item xs={12} sm={6}>
                 <p className='p-dashboard'>
                   {' '}
-                  {dashboard !== null ? dashboard.messagesCount : 0}
+                  {dashboard !== null ? dashboard.testsCount : 0}
                 </p>
               </Grid>
               {isAuthenticated && user !== null && user.role === 'student'

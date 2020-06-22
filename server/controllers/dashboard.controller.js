@@ -7,8 +7,9 @@ const UserNotification = require('../models/UserNotification.model');
 const TaskSolution = require('../models/TaskSolution.model');
 const ActiveTest = require('../models/tests_module/ActiveTest.model');
 const UserTest = require('../models/tests_module/UserTest.model');
-const TestModel = require('../models/tests_module/Test.model');
 const Test = require('../models/tests_module/Test.model');
+
+const TWO_HOURS = 2 * 60 * 60 * 1000;
 
 // @desc    Get user dashboard info
 // @route   GET /api/v1/dashboard
@@ -40,10 +41,17 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     let activeTests = [];
     for (const uT of userTests) {
       let activeTest = await ActiveTest.findById(uT.activeTestId);
-      if (activeTest.availableAt < new Date() && activeTest.availableUntil > new Date())
-        activeTests.push(activeTest);
+      if (activeTest) {
+        if (
+          new Date(activeTest.availableAt) + TWO_HOURS <
+            new Date() + TWO_HOURS &&
+          new Date(activeTest.availableUntil) + TWO_HOURS >
+            new Date() + TWO_HOURS
+        )
+          activeTests.push(activeTest);
+      }
     }
-    
+
     // Check data if not null
     if (!groups) groups = [];
     if (!notifications) notifications = [];
@@ -68,7 +76,8 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
       isRead: false,
       user: user.id
     });
-    let tests = await Test.findById({ createdAt: user.id });
+
+    let tests = await Test.find({ createdBy: user.id });
     let messages = []; // TODO
     let tasks = await Task.find({ group: { $in: groupsId } });
     let tasksId = [];
