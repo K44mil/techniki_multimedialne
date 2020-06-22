@@ -8,6 +8,8 @@ const Group = require('../models/Group.model');
 const ActiveTest = require('../models/tests_module/ActiveTest.model');
 const { userJoin } = require('../utils/chatUser');
 
+const TWO_HOURS = 2*60*60*1000;
+
 // @desc    Create test
 // @route   POST /api/v1/tests
 // @access  Private
@@ -141,7 +143,7 @@ exports.getFinishedTests = asyncHandler(async (req, res, next) => {
       });
       if (activeTests) {
         for (const aT of activeTests) {
-          if (aT.availableUntil < new Date()) {
+          if (new Date(aT.availableUntil)+TWO_HOURS < new Date()+TWO_HOURS) {
             finishedTests.push(aT);
           }
         }
@@ -255,11 +257,11 @@ exports.getMyActiveTests = asyncHandler(async (req, res, next) => {
   const userTests = await UserTest.find({
     userId: user.id
   }).lean();
+
   let activeTests = [];
   for (const uT of userTests) {
     const activeTest = await ActiveTest.findById(uT.activeTestId).lean();
-
-    if (activeTest && activeTest.availableAt < new Date() && activeTest.availableUntil > new Date()) {
+    if (new Date(activeTest.availableAt)+TWO_HOURS < new Date()+TWO_HOURS && new Date(activeTest.availableUntil) + TWO_HOURS > new Date()+TWO_HOURS) {      
       const test = await Test.findById(activeTest.testId);
       const group = await Group.findById(activeTest.groupId);
       let obj = uT;
@@ -268,6 +270,7 @@ exports.getMyActiveTests = asyncHandler(async (req, res, next) => {
       activeTests.push(obj);
     }
   }
+
   // Send response
   res.status(200).json({
     success: true,
