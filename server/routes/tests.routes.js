@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
+
 const {
   createTest,
   activateTest,
@@ -13,6 +14,7 @@ const {
   getMyActiveTests,
   startTest,
   checkTest
+
 } = require('../controllers/tests.controller');
 
 router
