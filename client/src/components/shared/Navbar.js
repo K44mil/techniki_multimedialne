@@ -19,7 +19,7 @@ const Navbar = ({ auth: { isAuthenticated, loading, user = {} }, logout }) => {
       </li>
       <li className='profile-icon'>
         <Link to='/' onClick={logout}>
-          Logout
+          Wyloguj
         </Link>
       </li>
     </ul>
@@ -28,10 +28,10 @@ const Navbar = ({ auth: { isAuthenticated, loading, user = {} }, logout }) => {
   const guestLinks = (
     <ul>
       <li>
-        <Link to='/register'>Register</Link>
+        <Link to='/register'>Rejestracja</Link>
       </li>
       <li>
-        <Link to='/login'>Login</Link>
+        <Link to='/login'>Logowanie</Link>
       </li>
     </ul>
   );
@@ -39,7 +39,7 @@ const Navbar = ({ auth: { isAuthenticated, loading, user = {} }, logout }) => {
     <nav className='navbar bg-dark'>
       <h1>
         <Link to='/'>
-          <i className='fas fa-code'></i> eLesson
+          <i className='fas fa-code'></i> eLekcje
         </Link>
       </h1>
       {!loading && (

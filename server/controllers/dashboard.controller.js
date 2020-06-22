@@ -46,7 +46,7 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
           activeTests.push(activeTest);
       }
     }
-    
+
     // Check data if not null
     if (!groups) groups = [];
     if (!notifications) notifications = [];

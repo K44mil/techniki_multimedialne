@@ -22,19 +22,11 @@ const loginSchema = Yup.object().shape({
 });
 
 const Login = ({ login, isAuthenticated }) => {
-  // const [formData, setFormData] = useState({
-  //   email: '',
-  //   password: ''
-  // });
-
   const initialState = {
     email: '',
     password: ''
   };
 
-  // const onChange = e =>
-  //   setFormData({ ...formData, [e.target.name]: e.target.value });
-  // Redirect if logged in
   if (isAuthenticated) {
     return <Redirect to='/dashboard' />;
   }
@@ -43,7 +35,7 @@ const Login = ({ login, isAuthenticated }) => {
       <div>
         <h1 className='large text-primary'>Login</h1>
         <p className='lead'>
-          <i className='fas fa-user'></i> Log in to your account
+          <i className='fas fa-user'></i> Zaloguj się do swojego konta
         </p>
         <Formik
           initialValues={initialState}
@@ -62,7 +54,7 @@ const Login = ({ login, isAuthenticated }) => {
               </div>
 
               <div className='form-group'>
-                <Field type='password' name='password' placeholder='Password' />
+                <Field type='password' name='password' placeholder='Hasło' />
                 {errors.password && touched.password ? (
                   <div>{errors.password}</div>
                 ) : null}
@@ -73,7 +65,7 @@ const Login = ({ login, isAuthenticated }) => {
           )}
         </Formik>
         <p className='my-1'>
-          Don't have an account? <Link to='/register'>Sign up</Link>
+          Nie masz konta? <Link to='/register'>Zarejestruj się</Link>
         </p>
       </div>
     </section>

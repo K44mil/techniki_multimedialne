@@ -80,13 +80,13 @@ const ActiveTestDetails = ({ test: { details, loading } }) => {
                   className='dashboard-button profile-btn'
                   onClick={() => {
                     localStorage.removeItem('testId');
-                    history.push('/tests');
+                    history.push('/dashboard');
                   }}
                 >
                   <span className='back-icon'>
                     <ArrowBackIcon />
                   </span>{' '}
-                  Testy
+                  Dashboard
                 </button>
                 <div className='bg-light'>
                   <div className='container-profile'>

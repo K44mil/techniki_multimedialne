@@ -106,12 +106,12 @@ const Tests = ({ test: { tests, test, loading }, auth: { user } }) => {
           setTimeout(() => {
             testFlag === 1
               ? dispatch(getTestById(tableID.ID))
-              : testFlag === 2
+              : testFlag === 2 || testFlag === 3
               ? dispatch(getParticipantsDetails(tableID.ID))
               : dispatch(getTestById(tableID.ID));
             testFlag === 1
               ? history.push('/examProfile')
-              : testFlag === 2
+              : testFlag === 2 || testFlag === 3
               ? history.push('/testDetails')
               : history.push('/examProfile');
           }, 100);
@@ -147,7 +147,7 @@ const Tests = ({ test: { tests, test, loading }, auth: { user } }) => {
               key === 'createdAt'
             )
               return el[key];
-          } else if (testFlag === 2 || testFlagStudent === 2) {
+          } else if (testFlag === 2 || testFlag === 3) {
             if (
               key === 'groupName' ||
               key === 'testName' ||
@@ -293,7 +293,9 @@ const Tests = ({ test: { tests, test, loading }, auth: { user } }) => {
                 columns={
                   testFlag === 1 && user && user.role === 'teacher'
                     ? columns
-                    : testFlag === 2 && user && user.role === 'teacher'
+                    : (testFlag === 2 || testFlag === 3) &&
+                      user &&
+                      user.role === 'teacher'
                     ? columnsActive
                     : (testFlagStudent === 2 || testFlagStudent === 3) &&
                       user &&
