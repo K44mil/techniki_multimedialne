@@ -56,6 +56,11 @@ const Dashboard = ({
   if (localStorage.getItem('groupId')) localStorage.removeItem('groupId');
   if (localStorage.getItem('listening')) localStorage.removeItem('listening');
   if (localStorage.getItem('groupName')) localStorage.removeItem('groupName');
+  if (localStorage.getItem('testId')) localStorage.removeItem('testId');
+  if (localStorage.getItem('testDetailsId'))
+    localStorage.removeItem('testDetailsId');
+
+  if (localStorage.getItem('time')) localStorage.removeItem('time');
   if (loading || (loading && dashboard === null)) {
     return (
       <div className='loader'>

@@ -11,16 +11,17 @@ const Landing = ({ isAuthenticated }) => {
     <section className='landing'>
       <div className='dark-overlay'>
         <div className='landing-inner'>
-          <h1 className='x-large'>eLesson Platform</h1>
+          <h1 className='x-large'>eLekcje</h1>
           <p className='lead'>
-            Create a lesson's group, share materials, do tests in one place.
+            Twórz własne grupy, udostępniaj zadania, twórz testy - w jednym
+            miejscu!
           </p>
           <div className='buttons'>
             <Link to='/register' className='btn btn-primary'>
-              Sign Up
+              Rejestracja
             </Link>
             <Link to='/login' className='btn btn-light'>
-              Login
+              Logowanie
             </Link>
           </div>
         </div>

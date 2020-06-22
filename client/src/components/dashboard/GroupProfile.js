@@ -59,8 +59,6 @@ const GroupProfile = ({
     localStorage.setItem('groupName', group.data.name);
   }
 
-  console.log(localStorage.getItem('groupId'));
-
   useEffect(
     group => {
       if (group !== null && group !== undefined) {

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import GroupIcon from '@material-ui/icons/Group';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import EmailIcon from '@material-ui/icons/Email';
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import WorkIcon from '@material-ui/icons/Work';
 import { Modal } from '../shared/Modal';
 import GroupForm from '../dashboard/GroupForm';
@@ -101,18 +101,55 @@ const Menu = ({
         <button
           className='dashboard-button'
           type='submit'
-          onClick={() => history.push('/dashboard')}
+          onClick={() => history.push('/tasks')}
         >
-          Do oceny
+          Twoje zadania
         </button>
       </Grid>
       <Grid item xs={12} sm={6}>
         <button
           className='dashboard-button'
           type='submit'
-          onClick={() => history.push('/tasks')}
+          onClick={() => history.push('/dashboard')}
         >
-          Twoje zadania
+          Do oceny
+        </button>
+      </Grid>
+    </>
+  );
+
+  const studentButtonTests = (
+    <Grid item xs={12} sm={12}>
+      <button
+        className='dashboard-button'
+        type='submit'
+        onClick={() => {
+          history.push('/tests');
+        }}
+      >
+        Twoje testy
+      </button>
+    </Grid>
+  );
+
+  const teacherButtonTests = (
+    <>
+      <Grid item xs={12} sm={6}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/createExam')}
+        >
+          Stwórz test
+        </button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <button
+          className='dashboard-button'
+          type='submit'
+          onClick={() => history.push('/tests')}
+        >
+          Twoje testy
         </button>
       </Grid>
     </>
@@ -210,22 +247,20 @@ const Menu = ({
         </Grid>
         <Grid item xs>
           <div className='dashboard-box box-secondary'>
-            <h1>Wiadomości</h1>
+            <h1>Testy</h1>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6}>
-                <EmailIcon fontSize='large' />
+                <FormatListNumberedIcon fontSize='large' />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <p className='p-dashboard'>
                   {' '}
-                  {dashboard !== null ? dashboard.messagesCount : 0}
+                  {dashboard !== null ? dashboard.testsCount : 0}
                 </p>
               </Grid>
-              <Grid item xs={12} sm={12}>
-                <button className='dashboard-button' type='submit'>
-                  Sprawdź wiadomości
-                </button>
-              </Grid>
+              {isAuthenticated && user !== null && user.role === 'student'
+                ? studentButtonTests
+                : teacherButtonTests}
             </Grid>
           </div>
         </Grid>

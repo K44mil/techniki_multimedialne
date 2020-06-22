@@ -6,7 +6,7 @@ import notification from './notification';
 import task from './task';
 import rate from './rate';
 import message from './message';
-
+import test from './test';
 export default combineReducers({
   alert,
   auth,
@@ -14,5 +14,6 @@ export default combineReducers({
   notification,
   task,
   rate,
-  message
+  message,
+  test
 });
