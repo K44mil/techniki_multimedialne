@@ -33,7 +33,8 @@ const ActiveTestDetails = ({ test: { details, loading } }) => {
       name: 'Status Testu'
     },
     'Rezultat',
-    ''
+    'Imię',
+    'Nazwisko'
   ];
   if (details && details !== undefined && details.details !== undefined) {
     localStorage.setItem('testDetailsId', details.details[0].activeTestId);
@@ -59,7 +60,13 @@ const ActiveTestDetails = ({ test: { details, loading } }) => {
   ) {
     const results = details.details.map(el => {
       return Object.keys(el).map(key => {
-        if (key === 'status' || key === 'result' || key === '_id') {
+        if (
+          key === 'status' ||
+          key === 'result' ||
+          key === '_id' ||
+          key === 'firstName' ||
+          key === 'lastName'
+        ) {
           return el[key];
         }
       });
