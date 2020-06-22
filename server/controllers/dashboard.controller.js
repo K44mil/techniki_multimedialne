@@ -5,6 +5,10 @@ const Group = require('../models/Group.model');
 const Task = require('../models/Task.model');
 const UserNotification = require('../models/UserNotification.model');
 const TaskSolution = require('../models/TaskSolution.model');
+const ActiveTest = require('../models/tests_module/ActiveTest.model');
+const UserTest = require('../models/tests_module/UserTest.model');
+const TestModel = require('../models/tests_module/Test.model');
+const Test = require('../models/tests_module/Test.model');
 
 // @desc    Get user dashboard info
 // @route   GET /api/v1/dashboard
@@ -15,6 +19,7 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     groupsCount: 0,
     notificationsCount: 0,
     messagesCount: 0,
+    testsCount: 0,
     todo: []
   };
   // Role student
@@ -31,7 +36,14 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     for (const tS of taskSolutions) {
       tasks.filter(t => t.id.toString() !== tS.id.toString());
     }
-
+    let userTests = await UserTest.find({ userId: user.id });
+    let activeTests = [];
+    for (const uT of userTests) {
+      let activeTest = await ActiveTest.findById(uT.activeTestId);
+      if (activeTest.availableAt < new Date() && activeTest.availableUntil > new Date())
+        activeTests.push(activeTest);
+    }
+    
     // Check data if not null
     if (!groups) groups = [];
     if (!notifications) notifications = [];
@@ -41,6 +53,7 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     data.groupsCount = groups.length;
     data.notificationsCount = notifications.length;
     data.messagesCount = messages.length;
+    data.testsCount = activeTests.length;
     data.todo = tasks;
   }
   // Role teacher
@@ -55,6 +68,7 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
       isRead: false,
       user: user.id
     });
+    let tests = await Test.findById({ createdAt: user.id });
     let messages = []; // TODO
     let tasks = await Task.find({ group: { $in: groupsId } });
     let tasksId = [];
@@ -79,10 +93,12 @@ exports.getDashboard = asyncHandler(async (req, res, next) => {
     if (!notifications) notifications = [];
     if (!messages) messages = [];
     if (!taskSolutions) taskSolutions = [];
+    if (!tests) tests = [];
     // Set data to response
     data.groupsCount = groups.length;
     data.notificationsCount = notifications.length;
     data.messagesCount = messages.length;
+    data.testsCount = tests.length;
     data.todo = taskSolutions;
   }
   // Send response
