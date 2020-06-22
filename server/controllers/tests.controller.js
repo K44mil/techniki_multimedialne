@@ -261,13 +261,15 @@ exports.getMyActiveTests = asyncHandler(async (req, res, next) => {
   let activeTests = [];
   for (const uT of userTests) {
     const activeTest = await ActiveTest.findById(uT.activeTestId).lean();
-    if (new Date(activeTest.availableAt)+TWO_HOURS < new Date()+TWO_HOURS && new Date(activeTest.availableUntil) + TWO_HOURS > new Date()+TWO_HOURS) {      
-      const test = await Test.findById(activeTest.testId);
-      const group = await Group.findById(activeTest.groupId);
-      let obj = uT;
-      obj.testName = test.name;
-      obj.groupName = group.name;
-      activeTests.push(obj);
+    if (activeTest) {
+      if (new Date(activeTest.availableAt)+TWO_HOURS < new Date()+TWO_HOURS && new Date(activeTest.availableUntil) + TWO_HOURS > new Date()+TWO_HOURS) {      
+        const test = await Test.findById(activeTest.testId);
+        const group = await Group.findById(activeTest.groupId);
+        let obj = uT;
+        obj.testName = test.name;
+        obj.groupName = group.name;
+        activeTests.push(obj);
+      }
     }
   }
 
