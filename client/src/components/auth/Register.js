@@ -59,9 +59,9 @@ const Register = ({ register, isAuthenticated }) => {
   return (
     <section className='container'>
       <div>
-        <h1 className='large text-primary'>Signup</h1>
+        <h1 className='large text-primary'>Rejestracja</h1>
         <p className='lead'>
-          <i className='fas fa-user'></i> Create Your Account
+          <i className='fas fa-user'></i> Stwórz swoje konto
         </p>
         <Formik
           initialValues={formData}
@@ -98,21 +98,21 @@ const Register = ({ register, isAuthenticated }) => {
               </div>
 
               <div className='form-group'>
-                <Field type='password' name='password' placeholder='Password' />
+                <Field type='password' name='password' placeholder='Hasło' />
                 {errors.password && touched.password ? (
                   <div>{errors.password}</div>
                 ) : null}
               </div>
 
               <div className='form-group'>
-                <Field type='text' placeholder='Name' name='firstName' />
+                <Field type='text' placeholder='Imię' name='firstName' />
                 {errors.firstName && touched.firstName ? (
                   <div>{errors.firstName}</div>
                 ) : null}
               </div>
 
               <div className='form-group'>
-                <Field type='text' name='lastName' placeholder='Last name' />
+                <Field type='text' name='lastName' placeholder='Nazwisko' />
                 {errors.lastName && touched.lastName ? (
                   <div>{errors.lastName}</div>
                 ) : null}
@@ -121,13 +121,13 @@ const Register = ({ register, isAuthenticated }) => {
               <input
                 type='submit'
                 className='btn btn-primary'
-                value='Register'
+                value='Rejestracja'
               />
             </Form>
           )}
         </Formik>
         <p className='my-1'>
-          Already have an account? <Link to='/login'>Sign In</Link>
+          Masz już konto? <Link to='/login'>Zaloguj się</Link>
         </p>
       </div>
     </section>
