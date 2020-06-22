@@ -7,6 +7,7 @@ const Answer = require('../models/tests_module/Answer.model');
 const Group = require('../models/Group.model');
 const ActiveTest = require('../models/tests_module/ActiveTest.model');
 const { userJoin } = require('../utils/chatUser');
+const User = require('../models/User.model'); 
 
 const TWO_HOURS = 2*60*60*1000;
 
@@ -209,6 +210,13 @@ exports.getTestDetails = asyncHandler(async (req, res, next) => {
   const details = await UserTest.find({
     activeTestId: activeTest.id
   }).lean();
+  
+  for (const d of details) {
+    const user = await User.findById(d.userId);
+    d.firstName = user.firstName;
+    d.lastName = user.lastName;
+  }
+  
   // Send response
   res.status(200).json({
     success: true,
