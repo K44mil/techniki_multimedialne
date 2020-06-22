@@ -141,10 +141,16 @@ exports.getFinishedTests = asyncHandler(async (req, res, next) => {
     for (const t of tests) {
       const activeTests = await ActiveTest.find({
         testId: t.id
-      });
+      }).lean();
       if (activeTests) {
         for (const aT of activeTests) {
+          const test = await Test.findById(aT.testId);
+          const group = await Group.findById(aT.groupId);
           if (new Date(aT.availableUntil)+TWO_HOURS < new Date()+TWO_HOURS) {
+            if (test && group) {
+              aT.testName = test.name;
+              aT.groupName = group.name;
+            }
             finishedTests.push(aT);
           }
         }
